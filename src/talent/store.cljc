@@ -17,7 +17,8 @@
   The ledger stays append-only on every backend — 'who changed/disclosed
   whose record, on what basis' is always a query over an immutable log, the
   data-sovereignty property a SaaS won't give you."
-  (:require [clojure.edn :as edn]
+  (:require #?(:clj  [clojure.edn :as edn]
+               :cljs [cljs.reader :as edn])
             [clojure.string :as str]
             [langchain.db :as d]))
 

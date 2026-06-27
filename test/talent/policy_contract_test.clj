@@ -43,7 +43,7 @@
 
 (deftest manager-cannot-act-outside-reports
   (testing "a manager may only act on their own direct reports"
-    (let [[db actor] (fresh)
+    (let [[_ actor] (fresh)
           ;; e-100 manages e-001/e-002; acting on a non-report must HOLD.
           res (exec-op actor "t3"
                     {:op :evaluation/draft :subject "e-100"}

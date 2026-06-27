@@ -18,7 +18,8 @@
      :effect     kw             ; how a commit would mutate the SSoT
      :stake      kw|nil         ; :grade-change/:termination/... if high-stakes
      :confidence 0..1}"
-  (:require [clojure.edn :as edn]
+  (:require #?(:clj  [clojure.edn :as edn]
+               :cljs [cljs.reader :as edn])
             [clojure.string :as str]
             [langchain.model :as model]
             [talent.store :as store]))
@@ -146,7 +147,8 @@
   a safe low-confidence noop so the PolicyGovernor escalates/holds — an LLM
   hiccup can never auto-commit."
   [content]
-  (let [p (try (edn/read-string (str/trim (str content))) (catch Exception _ nil))]
+  (let [p (try (edn/read-string (str/trim (str content)))
+               (catch #?(:clj Exception :cljs :default) _ nil))]
     (if (map? p)
       (-> p
           (update :cites #(vec (or % [])))
