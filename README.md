@@ -1,4 +1,11 @@
-# gftd-talent-actor
+# cloud-itonami-6310
+
+Open Business Blueprint for **ISIC Rev.5 6310**: computing infrastructure,
+data processing, hosting and related activities. This repository publishes the
+HR/talent-management SaaS replacement as an OSS business that any qualified
+operator can fork, deploy, run, improve and sell.
+
+Former name: `gftd-talent-actor`.
 
 A talent-management **actor design** — the OSS replacement for a HR SaaS
 (kaonavi 等) that you run yourself, so you **never pay a SaaS to hold your
@@ -20,7 +27,27 @@ interrupts, Datomic/in-mem checkpoints) — the same actor pattern as
 
 See [`docs/DESIGN.md`](docs/DESIGN.md) for the full architecture and
 [`docs/adr/0001-architecture.md`](docs/adr/0001-architecture.md) for the
-decision record.
+decision record. See [`docs/business-model.md`](docs/business-model.md) and
+[`docs/operator-guide.md`](docs/operator-guide.md) to start this as an open
+business on itonami.cloud.
+
+## Open business
+
+This repository is not only source code. It is a public, forkable business
+model:
+
+| Layer | What is open |
+|---|---|
+| OSS core | Actor runtime, PolicyGovernor, governed report/export, audit ledger |
+| Business blueprint | Customer, offer, pricing, unit economics, sales motion |
+| Operator playbook | How to fork, deploy, support and sell the service |
+| Trust controls | Governance, security reporting, policy tests, audit requirements |
+
+The primary industry classification is **ISIC Rev.5 6310** because the
+commercial activity is operating computing infrastructure and hosted data
+processing for a SaaS replacement. The served domain is HR/talent operations
+and may also reference employment-service classifications in downstream
+marketplace metadata.
 
 ## The core contract
 
@@ -71,14 +98,14 @@ approves → commit**), then prints the immutable audit ledger.
 | `src/talent/phase.cljc` | **Phase 0→3 rollout** — read-only → assisted → supervised-auto (HR analog of robotaxi ODD) |
 | `src/talent/operation.cljc` | **OperationActor** — langgraph-clj StateGraph (1 run = 1 HR op); Store/Advisor/Phase injected |
 | `src/talent/store.cljc` | **Store** protocol — `MemStore` (default) ‖ `DatomicStore` (`langchain.db`, swappable to Datomic Local / kotoba-server) + append-only ledger |
-| `src/talent/facts.clj` | **seed adapter** — hydrate employees/goals/surveys from `m365-archive/facts` (annex-aware fallback) |
+| `src/talent/facts.cljc` | **seed adapter** — hydrate employees/goals/surveys from `m365-archive/facts` (annex-aware fallback) |
 | `src/talent/report.cljc` | **ReportActor** — governed CSV/帳票 + org-chart projection |
 | `src/talent/sim.cljc` | demo driver |
-| `test/talent/*_test.clj` | policy contract · store parity (Mem≡Datomic) · LLM advisor · phase rollout · facts — **26 tests / 91 assertions** |
+| `test/talent/*_test.cljc` | policy contract · store parity (Mem≡Datomic) · LLM advisor · phase rollout · facts — **26 tests / 91 assertions** |
 
 ## kaonavi 相当機能の対応
 
-| kaonavi | gftd-talent-actor |
+| kaonavi | cloud-itonami-6310 |
 |---|---|
 | 従業員DB / 組織図 | `store` employees/org + `:employee/upsert` |
 | 人事評価・目標 MBO/OKR | `:evaluation/draft`（LLMドラフト）+ 承認ワークフロー |
@@ -133,3 +160,10 @@ Phase 0→3**）まで完了。runnable + **26 tests / 91 assertions / 0 failure
 `MemStore ≡ DatomicStore` を同一契約テストで保証。残り: 実 Datomic Local /
 kotoba-server pod・実 LLM エンドポイントでの結合確認（要 creds/infra）、
 m365 facts 実体取得（`west annex-get`）後の本番 seed。
+
+## License
+
+Code is licensed under AGPL-3.0-or-later. Documentation and business-blueprint
+text are intended for open reuse with attribution and share-alike expectations;
+platform certification and the `itonami.cloud` trust mark are governed
+separately.

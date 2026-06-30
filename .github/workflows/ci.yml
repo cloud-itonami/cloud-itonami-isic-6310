@@ -35,7 +35,7 @@ jobs:
     steps:
       # lay the west workspace out so ../../com-junkawasaki/* resolves
       - uses: actions/checkout@v4
-        with: { path: orgs/gftdcojp/gftd-talent-actor }
+        with: { path: orgs/gftdcojp/cloud-itonami-6310 }
       - uses: actions/checkout@v4
         with:
           repository: com-junkawasaki/langgraph-clj
@@ -49,5 +49,5 @@ jobs:
       - uses: DeLaGuardo/setup-clojure@13.0
         with: { cli: latest }
       - name: test (policy contract · store parity · LLM advisor · phases · facts)
-        working-directory: orgs/gftdcojp/gftd-talent-actor
+        working-directory: orgs/gftdcojp/cloud-itonami-6310
         run: clojure -M:dev:test
