@@ -13,7 +13,13 @@
   (let [db (store/seed-db)]
     [db (op/build db)]))
 
-(def hrbp {:actor-id "e-900" :actor-role :hrbp :purpose :review :consent? true})
+;; :phase 3 (supervised-auto) is explicit and deliberate here -- these
+;; tests exercise the PolicyGovernor in isolation and want maximum
+;; permissiveness so a policy-clean write auto-commits without the phase
+;; gate adding its own approval step; they must not rely on default-phase
+;; (talent.phase) for this, since default-phase is the safe FALLBACK for
+;; a caller that omits :phase entirely, not "phase used by tests."
+(def hrbp {:actor-id "e-900" :actor-role :hrbp :purpose :review :consent? true :phase 3})
 
 (defn- exec-op [actor tid request context]
   (g/run* actor {:request request :context context} {:thread-id tid}))
