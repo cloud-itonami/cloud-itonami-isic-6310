@@ -48,6 +48,10 @@ cd web && ../../../../node_modules/.bin/nbb \
 ../../../../node_modules/.bin/nbb verify_search.cljs   # headless UI logic check
 ```
 
+See [`docs/operator-quickstart.md`](docs/operator-quickstart.md) to go
+from fork to a private production instance (seed your org, customize
+the policy pack, wire approvals, phase rollout).
+
 See [`docs/DESIGN.md`](docs/DESIGN.md) for the full architecture and
 [`docs/adr/0001-architecture.md`](docs/adr/0001-architecture.md) for the
 decision record. See [`docs/business-model.md`](docs/business-model.md) and
