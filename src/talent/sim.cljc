@@ -41,7 +41,14 @@
 (defn -main [& _]
   (let [db    (store/seed-db)
         actor (op/build db)
-        hrbp  {:actor-id "e-900" :actor-role :hrbp :purpose :review :consent? true}]
+        ;; :phase 3 explicitly -- the narrative below (op1 auto-commits,
+        ;; op4 escalates for approval) is the supervised-auto tier. Since
+        ;; talent.phase/default-phase became 1 (assisted-eval -- a missing
+        ;; :phase must get the conservative default, not the permissive
+        ;; one), omitting :phase here would instead give op1 :phase-approval
+        ;; and op4 :phase-disabled. The Phase 0→3 section at the end still
+        ;; varies :phase per run.
+        hrbp  {:actor-id "e-900" :actor-role :hrbp :purpose :review :consent? true :phase 3}]
 
     (line "── 従業員DB / 組織図 (DirectoryActor) ──")
     (line (report/org-chart-text db "e-100"))

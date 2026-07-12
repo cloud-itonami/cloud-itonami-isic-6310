@@ -68,9 +68,16 @@
 (assert! (= "" (board-html)) "no-hit query renders no cards")
 (assert! (false? (boolean (aget (get elements "empty") "hidden"))) "no-hit query reveals the empty notice")
 
-;; the page carries the REAL policy verdicts computed at build time
+;; the page carries the REAL actor-run verdicts computed at build time
 (assert! (.includes html "fairness") "fairness hold present in verdict table")
 (assert! (.includes html "minimal-disclosure") "minimal-disclosure hold present in verdict table")
 (assert! (.includes html "escalate") "escalation present in verdict table")
+
+;; the audit ledger section is the REAL append-only record of the build-time runs
+(assert! (.includes html "op=:employee/upsert") "ledger has op1 upsert fact")
+(assert! (.includes html "basis=[:fairness]") "ledger has op2 fairness hold fact")
+(assert! (.includes html "basis=[:minimal-disclosure]") "ledger has op3 disclosure hold fact")
+(assert! (.includes html "op=:survey/analyze") "ledger has op4 survey fact")
+(assert! (.includes json-block "営業推進") "board reflects op1's committed dept change")
 
 (println "verify_search: all assertions passed")

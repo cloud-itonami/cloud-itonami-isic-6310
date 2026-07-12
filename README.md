@@ -30,10 +30,11 @@ interrupts, Datomic/in-mem checkpoints) — the same actor pattern as
 **<https://cloud-itonami.github.io/cloud-itonami-isic-6310/>** -- a
 static, zero-build Talent Board over the demo org (synthetic data),
 plus a PolicyGovernor verdict table for the four kaonavi-equivalent
-operations. The board and the verdicts are not hand-typed:
-`web/generate.cljs` (nbb) reads the board from the real seeded
-`talent.store` and recomputes every verdict with the real
-`talent.policy/check` at build time; protected attributes are
+operations. The board, the verdicts AND the audit
+ledger are not hand-typed: `web/generate.cljs` (nbb) runs the FULL
+OperationActor StateGraph (advisor -> PolicyGovernor -> phase gate ->
+approval interrupt) for the four operations at build time and renders
+the post-run Store plus the append-only ledger those runs wrote; protected attributes are
 structurally absent from the page data (that's the minimum-disclosure
 gate working). In-browser search is `web/search.cljs` run by scittle
 (ClojureScript in the browser -- no hand-written JS, no build step),
@@ -42,7 +43,7 @@ exercises the real client logic against the real generated page.
 
 ```bash
 cd web && ../../../../node_modules/.bin/nbb \
-  --classpath "../src:../../../kotoba-lang/html/src:../../../kotoba-lang/css/src:../../../kotoba-lang/langchain/src" \
+  --classpath "../src:../../../kotoba-lang/html/src:../../../kotoba-lang/css/src:../../../kotoba-lang/langchain/src:../../../kotoba-lang/langgraph/src" \
   generate.cljs          # regenerate docs/index.html + docs/search.cljs
 ../../../../node_modules/.bin/nbb verify_search.cljs   # headless UI logic check
 ```
