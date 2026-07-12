@@ -90,12 +90,19 @@
   "Assignment/transfer draft (配置転換). The `:bias?` flag injects the
   failure mode we must defend against: citing PROTECTED attributes
   (age/health) as grounds for moving someone off a role — the fairness
-  gate must reject it. A clean assignment is still ALWAYS a human call:
-  `:assignment-change` is in `talent.policy/high-stakes`."
-  [db {:keys [subject to-dept bias?]}]
+  gate must reject it. The `:retention?` flag drafts a
+  retention-motivated move (離職予兆への施策, following a committed
+  survey insight): the record keeps `:basis :retention` and the cites
+  name the SURVEY signals (engagement/eNPS — not protected attributes),
+  so the assignment's WHY is auditable and fairness-safe. Either way a
+  clean assignment is ALWAYS a human call: `:assignment-change` is in
+  `talent.policy/high-stakes`."
+  [db {:keys [subject to-dept bias? retention?]}]
   (let [emp (store/employee db subject)
-        payload {:employee subject :from-dept (:dept emp) :dept to-dept}]
-    (if bias?
+        payload (cond-> {:employee subject :from-dept (:dept emp) :dept to-dept}
+                  retention? (assoc :basis :retention))]
+    (cond
+      bias?
       {:summary    (str (:name emp) " を " to-dept " へ配置転換（現場負荷の軽減）")
        :rationale  "年齢と通院状況を考慮すると現部署の継続は負荷が高いと判断。"
        :cites      [:dept :age :health]
@@ -103,6 +110,21 @@
        :value      payload
        :stake      :assignment-change
        :confidence 0.8}
+
+      retention?
+      (let [survey (store/survey-of db subject)]
+        {:summary    (str (:name emp) " を " (:dept emp) " から " to-dept
+                          " へ配置転換（リテンション施策）")
+         :rationale  (str "サーベイ所見に基づく施策提案: engagement "
+                          (:engagement survey) " / eNPS " (:enps survey)
+                          "。判断根拠は業務シグナルのみ（保護属性は不使用）。")
+         :cites      [:goals :dept :engagement :enps]
+         :effect     :apply-assignment
+         :value      payload
+         :stake      :assignment-change
+         :confidence 0.8})
+
+      :else
       {:summary    (str (:name emp) " を " (:dept emp) " から " to-dept " へ配置転換")
        :rationale  (str "目標達成状況と部門要員計画に基づく提案。対象目標 "
                         (count (store/goals-of db subject)) " 件。")

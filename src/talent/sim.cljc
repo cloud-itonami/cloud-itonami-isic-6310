@@ -8,7 +8,8 @@
     op3  帳票 export が病歴/年齢を過剰列に含む          → 最小開示 REJECT → hold
     op4  サーベイ分析が離職リスク high（重大・低確信）  → 人間承認へ escalate
                                                        → HRBP approve → commit
-    op5  配置転換ドラフト（正当）                       → 高影響 escalate
+    op5  配置転換ドラフト（op4 の高リスク所見を受けた
+         リテンション施策・根拠はサーベイ業務シグナル）  → 高影響 escalate
                                                        → HRBP approve → commit
     op5b 配置転換が年齢・通院を判断根拠に引用           → 公正性 REJECT → hold
 
@@ -79,14 +80,14 @@
              {:op :survey/analyze :subject "e-002"}
              hrbp true)
 
-    (line "\nop5  配置転換ドラフト（e-001 をカスタマーサクセスへ・正当 → 人間承認）")
+    (line "\nop5  配置転換 — op4 の高リスク所見を受けたリテンション施策（e-002 → カスタマーサクセス、根拠はサーベイ業務シグナルのみ）")
     (run-op! actor "op5"
-             {:op :assignment/propose :subject "e-001" :to-dept "カスタマーサクセス"}
+             {:op :assignment/propose :subject "e-002" :to-dept "カスタマーサクセス" :retention? true}
              hrbp true)
 
     (line "\nop5b 配置転換 — 年齢・通院を根拠に引用（公正性 REJECT → hold）")
     (run-op! actor "op5b"
-             {:op :assignment/propose :subject "e-002" :to-dept "倉庫管理" :bias? true}
+             {:op :assignment/propose :subject "e-001" :to-dept "倉庫管理" :bias? true}
              hrbp true)
 
     (line "\n── 帳票（最小開示で許可された列のみ・headcount 目的）──")

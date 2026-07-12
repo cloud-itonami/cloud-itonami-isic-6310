@@ -146,7 +146,7 @@ approves → commit**), then prints the immutable audit ledger.
 | 従業員DB / 組織図 | `store` employees/org + `:employee/upsert` |
 | 人事評価・目標 MBO/OKR | `:evaluation/draft`（LLMドラフト）+ 承認ワークフロー |
 | エンゲージメントサーベイ・離職予兆 | `:survey/analyze`（LLM + governor） |
-| 配置転換・異動シミュレーション | `:assignment/propose`（高影響=常時人間承認、保護属性根拠は公正性ゲートが拒否、from/to+承認者を台帳化） |
+| 配置転換・異動シミュレーション | `:assignment/propose`（高影響=常時人間承認、保護属性根拠は公正性ゲートが拒否、from/to+承認者を台帳化。`:retention?` でサーベイ所見起点の施策として起票 — 記録に `:basis :retention`、根拠は業務シグナルのみ） |
 | 帳票・CSV 出力 | `report` governed export（最小開示ゲート） |
 | 承認フロー | `interrupt-before :request-approval`（human-in-the-loop） |
 | アクセス権限 | PolicyGovernor RBAC 表 |

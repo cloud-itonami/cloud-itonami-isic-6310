@@ -63,12 +63,13 @@
 (assert! (.includes (board-html) "佐藤 花子") "query keeps 佐藤")
 (assert! (not (.includes (board-html) "鈴木 太郎")) "query filters 鈴木 out")
 
-;; dept facet: カスタマーサクセス keeps only e-001 (post-assignment dept)
+;; dept facet: カスタマーサクセス keeps only e-002 (the retention move
+;; committed by op5, following op4's high-risk survey insight)
 (aset (get elements "q") "value" "")
 (aset (get elements "dept") "value" "カスタマーサクセス")
 ((get @listeners ["dept" "change"]))
-(assert! (.includes (board-html) "佐藤 花子") "dept facet keeps e-001 in her post-assignment dept")
-(assert! (not (.includes (board-html) "鈴木 太郎")) "dept facet filters other depts out")
+(assert! (.includes (board-html) "鈴木 太郎") "dept facet keeps e-002 in his post-retention-move dept")
+(assert! (not (.includes (board-html) "佐藤 花子")) "dept facet filters other depts out")
 (aset (get elements "dept") "value" "")
 
 ;; no-hit query -> empty notice
@@ -88,7 +89,8 @@
 (assert! (.includes html "basis=[:minimal-disclosure]") "ledger has op3 disclosure hold fact")
 (assert! (.includes html "op=:survey/analyze") "ledger has op4 survey fact")
 (assert! (.includes html "op=:assignment/propose") "ledger has op5 assignment facts")
-(assert! (.includes json-block "営業推進") "board reflects op1's committed dept change")
+(assert! (.includes json-block "カスタマーサクセス") "board reflects op5's committed retention move (e-002)")
+(assert! (.includes html "リテンション施策") "op5 row names the retention basis")
 (assert! (.includes json-block "カスタマーサクセス") "board reflects op5's approved 配置転換")
 (assert! (.includes html "配置転換") "assignment rows present in verdict table")
 

@@ -137,3 +137,16 @@
                         :purpose :review :consent? true :phase 3})]
       (is (= :hold (get-in res [:state :disposition])))
       (is (some #{:rbac} (-> (store/ledger db) first :basis))))))
+
+(deftest retention-assignment-keeps-its-why-and-stays-fair
+  (testing "リテンション起点の配置転換: cites はサーベイ業務シグナルのみ(公正性ゲート通過)、記録に :basis :retention が残り、それでも必ず人間承認"
+    (let [[db actor] (fresh)
+          res (exec-op actor "t-a4"
+                       {:op :assignment/propose :subject "e-002"
+                        :to-dept "カスタマーサクセス" :retention? true} hrbp)]
+      (is (= :interrupted (:status res)) "high-stakes: never auto-commits")
+      (let [r2 (g/run* actor {:approval {:status :approved :by "e-900"}}
+                       {:thread-id "t-a4" :resume? true})]
+        (is (= :commit (get-in r2 [:state :disposition])))
+        (is (= :retention (:basis (store/assignment-of db "e-002"))) "record keeps the WHY")
+        (is (= "カスタマーサクセス" (:dept (store/employee db "e-002"))))))))

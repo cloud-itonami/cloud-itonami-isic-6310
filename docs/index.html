@@ -35,7 +35,6 @@ code { background: var(--card); padding: 1px 5px; border-radius: 4px; font-size:
       <option value="">全部署</option>
       <option value="カスタマーサクセス">カスタマーサクセス</option>
       <option value="営業">営業</option>
-      <option value="営業推進">営業推進</option>
     </select></div>
     <div id="board"></div>
     <p id="empty" hidden>該当する社員はいません。</p>
@@ -90,11 +89,11 @@ code { background: var(--card); padding: 1px 5px; border-radius: 4px; font-size:
           <td>violation なし / confidence 0.55</td>
         </tr>
         <tr>
-          <td>op5 配置転換ドラフト（e-001 をカスタマーサクセスへ・正当）</td>
+          <td>op5 配置転換 — op4 の高リスク所見を受けたリテンション施策（e-002、根拠はサーベイ業務シグナルのみ）</td>
           <td>
             <span><span class="badge esc">escalate → 人間承認</span> <span class="badge ok">可決 → commit</span></span>
           </td>
-          <td>violation なし / confidence 0.85</td>
+          <td>violation なし / confidence 0.8</td>
         </tr>
         <tr>
           <td>op5b 配置転換が年齢・通院を判断根拠に引用</td>
@@ -115,8 +114,8 @@ code { background: var(--card); padding: 1px 5px; border-radius: 4px; font-size:
 hold · op=:evaluation/draft · actor=e-900 · subject=e-001 · basis=[:fairness]
 hold · op=:report/export · actor=e-900 · subject=* · basis=[:minimal-disclosure]
 commit · op=:survey/analyze · actor=e-900 · subject=e-002 · basis=[:engagement :enps :free]
-commit · op=:assignment/propose · actor=e-900 · subject=e-001 · basis=[:goals :dept]
-hold · op=:assignment/propose · actor=e-900 · subject=e-002 · basis=[:fairness]</pre>
+commit · op=:assignment/propose · actor=e-900 · subject=e-002 · basis=[:goals :dept :engagement :enps]
+hold · op=:assignment/propose · actor=e-900 · subject=e-001 · basis=[:fairness]</pre>
     <h2>この人材ボードが保証すること</h2>
     <ul>
       <li>保護属性(年齢・性別・国籍・信条・健康・婚姻・妊娠)は評価根拠にならない(<strong>公正性ゲート</strong>)</li>
@@ -128,7 +127,7 @@ hold · op=:assignment/propose · actor=e-900 · subject=e-002 · basis=[:fairne
     <footer>
       <p>OSS (AGPL-3.0-or-later)。fork して自社の人材基盤として運営できます — <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/business-model.md">business model</a> · <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/operator-guide.md">operator guide</a> · 姉妹デモ: <a href="https://cloud-itonami.github.io/cloud-itonami-isic-6399/">Meta Job Search (isic-6399)</a>。このページは <code>web/generate.cljs</code> (nbb) が実 Store/PolicyGovernor を実行して生成し、検索は <code>search.cljs</code> (scittle = ブラウザ内 ClojureScript) が実行しています。</p>
     </footer>
-    <script type="application/json" id="board-data">[{"id":"e-001","name":"佐藤 花子","grade":"G3","dept":"カスタマーサクセス","manager":"田中 部長","goals":["新規受注 12 件 — 14/12 ✓","提案資料テンプレ整備 — 1/1 ✓"],"engagement":"engagement 4.2 / eNPS 30"},{"id":"e-002","name":"鈴木 太郎","grade":"G2","dept":"営業推進","manager":"田中 部長","goals":["新規受注 8 件 — 5/8"],"engagement":"engagement 2.1 / eNPS -40"},{"id":"e-100","name":"田中 部長","grade":"G5","dept":"営業","manager":"—","goals":[],"engagement":"サーベイ未回答"}]</script>
+    <script type="application/json" id="board-data">[{"id":"e-001","name":"佐藤 花子","grade":"G3","dept":"営業","manager":"田中 部長","goals":["新規受注 12 件 — 14/12 ✓","提案資料テンプレ整備 — 1/1 ✓"],"engagement":"engagement 4.2 / eNPS 30"},{"id":"e-002","name":"鈴木 太郎","grade":"G2","dept":"カスタマーサクセス","manager":"田中 部長","goals":["新規受注 8 件 — 5/8"],"engagement":"engagement 2.1 / eNPS -40"},{"id":"e-100","name":"田中 部長","grade":"G5","dept":"営業","manager":"—","goals":[],"engagement":"サーベイ未回答"}]</script>
     <script src="https://cdn.jsdelivr.net/npm/scittle@0.6.22/dist/scittle.js"></script>
     <script type="application/x-scittle" src="search.cljs"></script>
   </body>
