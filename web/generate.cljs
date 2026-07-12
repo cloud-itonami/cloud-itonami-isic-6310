@@ -26,6 +26,7 @@
          '[css.core :as css]
          '[langgraph.graph :as g]
          '[talent.store :as store]
+         '[talent.hrllm :as hrllm]
          '[talent.operation :as op]
          '[talent.report :as report]
          '["fs" :as fs])
@@ -74,7 +75,39 @@
            :disposition (get-in r [:state :disposition])
            :verdict (get-in r [:state :verdict]))))
 
-(def results (mapv run-op! operations))
+(def base-results (mapv run-op! operations))
+
+;; op6 — check 7 (rationale-suspect) demonstrated with a deliberately
+;; biased advisor: CLEAN structured cites, protected keyword in the
+;; free-text rationale — the live-model failure mode the check was added
+;; for (talent.policy check 7). Escalates; the human REJECTS.
+(def suspect-advisor
+  (let [mock (hrllm/mock-advisor)]
+    (reify hrllm/Advisor
+      (-advise [_ st req]
+        (if (= :evaluation/draft (:op req))
+          {:summary "評価ドラフト（次期は昇給見送りが妥当）"
+           :rationale "女性で時短勤務のため成長期待は限定的と判断。"
+           :cites [:goals]
+           :effect :set-goal-eval
+           :stake nil
+           :confidence 0.9}
+          (hrllm/-advise mock st req))))))
+
+(def suspect-run
+  (let [actor2 (op/build db {:advisor suspect-advisor})
+        r (g/run* actor2 {:request {:op :evaluation/draft :subject "e-001"}
+                          :context hrbp} {:thread-id "op6"})
+        r2 (when (= :interrupted (:status r))
+             (g/run* actor2 {:approval {:status :rejected :by "e-100"}}
+                     {:thread-id "op6" :resume? true}))]
+    {:tid "op6"
+     :label "op6 check 7: cites はクリーン、rationale に「女性で…」（実LLMの失敗様式） — 人間が却下"
+     :rejected? (some? r2)
+     :disposition (get-in (or r2 r) [:state :disposition])
+     :verdict (get-in r [:state :verdict])}))
+
+(def results (conj base-results suspect-run))
 (def ledger (store/ledger db))
 
 ;; ReportActor output, computed from the POST-RUN store: the org chart
@@ -159,11 +192,12 @@
                    (str "engagement " (:engagement survey) " / eNPS " (:enps survey))
                    "サーベイ未回答")}))
 
-(defn disposition-badge [d approved?]
+(defn disposition-badge [{:keys [disposition approved? rejected?]}]
   (cond
-    (and (= d :commit) approved?) [:span [:span.badge.esc "escalate → 人間承認"] " " [:span.badge.ok "可決 → commit"]]
-    (= d :commit)  [:span.badge.ok "auto-commit"]
-    (= d :hold)    [:span.badge.hold "HOLD"]
+    rejected? [:span [:span.badge.esc "escalate → 人間レビュー"] " " [:span.badge.hold "却下 → HOLD"]]
+    (and (= disposition :commit) approved?) [:span [:span.badge.esc "escalate → 人間承認"] " " [:span.badge.ok "可決 → commit"]]
+    (= disposition :commit)  [:span.badge.ok "auto-commit"]
+    (= disposition :hold)    [:span.badge.hold "HOLD"]
     :else          [:span.badge.esc "escalate → 人間承認"]))
 
 (def page
@@ -205,13 +239,20 @@
     [:table
      [:thead [:tr [:th "operation"] [:th "判定"] [:th "根拠"]]]
      (into [:tbody]
-           (for [{:keys [label disposition verdict approved?]} results]
+           (for [{:keys [label verdict] :as row} results]
              [:tr
               [:td label]
-              [:td (disposition-badge disposition approved?)]
-              [:td (if-let [vs (seq (:violations verdict))]
-                     (into [:span] (for [v vs]
+              [:td (disposition-badge row)]
+              [:td (cond
+                     (seq (:violations verdict))
+                     (into [:span] (for [v (:violations verdict)]
                                      [:span [:span.badge.hold (name (:rule v))] " " (:detail v) [:br]]))
+
+                     (:rationale-suspect? verdict)
+                     [:span [:span.badge.esc "rationale-suspect"]
+                      " 保護属性語を rationale に検出(SOFT — 抑圧でなく人間レビューに回し、人間が却下した)"]
+
+                     :else
                      (str "violation なし / confidence " (:confidence verdict)))]]))]
 
     [:h2 "監査台帳 — 上の4実行が実際に書いた追記専用レコード"]

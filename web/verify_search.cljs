@@ -103,4 +103,9 @@
   (doseq [col ["health" "gender" "age"]]
     (assert! (not (.includes csv-block col)) (str "governed CSV has no '" col "' column"))))
 
+;; op6 — check 7 surfaced: suspect rationale escalated, human rejected
+(assert! (.includes html "rationale-suspect") "check-7 badge present in verdict table")
+(assert! (.includes html "却下 → HOLD") "human rejection path visible")
+(assert! (.includes html "basis=[:approver-rejected]") "ledger has the rejection fact")
+
 (println "verify_search: all assertions passed")
