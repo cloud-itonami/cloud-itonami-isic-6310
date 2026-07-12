@@ -95,6 +95,9 @@
      "input#q" {:flex 1 :font-size 16 :padding "10px 14px"
                 :border "1.5px solid var(--line)" :border-radius 8
                 :background "var(--bg)" :color "var(--fg)"}
+     "select#dept" {:font-size 15 :padding "10px 12px"
+                    :border "1.5px solid var(--line)" :border-radius 8
+                    :background "var(--bg)" :color "var(--fg)"}
      "#board" {:display :grid :grid-template-columns "repeat(auto-fill,minmax(250px,1fr))"
                :gap 12 :margin-top 12}
      ".card" {:background "var(--card)" :border "1px solid var(--line)"
@@ -173,7 +176,10 @@
       " のライブデモ(合成データ)。"]]
 
     [:div.search
-     [:input {:id "q" :type "search" :placeholder "氏名・部署で検索…" :autocomplete "off"}]]
+     [:input {:id "q" :type "search" :placeholder "氏名・部署で検索…" :autocomplete "off"}]
+     (into [:select {:id "dept"} [:option {:value ""} "全部署"]]
+           (for [d (sort (distinct (map :dept employees)))]
+             [:option {:value d} d]))]
     [:div {:id "board"}]
     [:p {:id "empty" :hidden true} "該当する社員はいません。"]
     [:p [:span.meta "カードに年齢・性別・国籍・健康情報が無いのは仕様です — 保護属性は "

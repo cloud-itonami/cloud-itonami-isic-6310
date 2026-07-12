@@ -25,16 +25,19 @@
          (str "<ul>" (apply str (map #(str "<li>" (esc %) "</li>") (:goals e))) "</ul>"))
        "</div>"))
 
-(defn- matches? [e q]
-  (or (= q "")
-      (.includes (.toLowerCase (str (:name e) " " (:dept e) " " (:grade e))) q)))
+(defn- matches? [e q dept]
+  (and (or (= dept "") (= dept (:dept e)))
+       (or (= q "")
+           (.includes (.toLowerCase (str (:name e) " " (:dept e) " " (:grade e))) q))))
 
 (defn- render! []
   (let [q (.toLowerCase (.-value (js/document.getElementById "q")))
-        hits (filter #(matches? % q) employees)]
+        dept (.-value (js/document.getElementById "dept"))
+        hits (filter #(matches? % q dept) employees)]
     (set! (.-innerHTML (js/document.getElementById "board"))
           (apply str (map card-html hits)))
     (set! (.-hidden (js/document.getElementById "empty")) (boolean (seq hits)))))
 
 (.addEventListener (js/document.getElementById "q") "input" render!)
+(.addEventListener (js/document.getElementById "dept") "change" render!)
 (render!)

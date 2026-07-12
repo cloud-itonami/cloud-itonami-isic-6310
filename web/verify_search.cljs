@@ -29,6 +29,7 @@
 (def elements
   {"board-data" (el "board-data" {"textContent" json-block})
    "q"          (el "q" {"value" ""})
+   "dept"       (el "dept" {"value" ""})
    "board"      (el "board" {"innerHTML" ""})
    "empty"      (el "empty" {"hidden" true})})
 
@@ -61,6 +62,14 @@
 ((get @listeners ["q" "input"]))
 (assert! (.includes (board-html) "佐藤 花子") "query keeps 佐藤")
 (assert! (not (.includes (board-html) "鈴木 太郎")) "query filters 鈴木 out")
+
+;; dept facet: カスタマーサクセス keeps only e-001 (post-assignment dept)
+(aset (get elements "q") "value" "")
+(aset (get elements "dept") "value" "カスタマーサクセス")
+((get @listeners ["dept" "change"]))
+(assert! (.includes (board-html) "佐藤 花子") "dept facet keeps e-001 in her post-assignment dept")
+(assert! (not (.includes (board-html) "鈴木 太郎")) "dept facet filters other depts out")
+(aset (get elements "dept") "value" "")
 
 ;; no-hit query -> empty notice
 (aset (get elements "q") "value" "zzz")
