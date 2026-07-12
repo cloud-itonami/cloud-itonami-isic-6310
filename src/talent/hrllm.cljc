@@ -13,7 +13,8 @@
 
   Proposal shape (all kinds):
     {:summary    str            ; human-facing draft / finding
-     :rationale  str            ; why — SCANNED by the fairness gate
+     :rationale  str            ; why — scanned by the fairness layer
+                                 ; (protected keyword → SOFT escalation)
      :cites      [kw|str ..]    ; fields/attrs the LLM used — SCANNED too
      :effect     kw             ; how a commit would mutate the SSoT
      :stake      kw|nil         ; :grade-change/:termination/... if high-stakes

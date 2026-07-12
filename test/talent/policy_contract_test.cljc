@@ -7,6 +7,7 @@
   (:require [clojure.test :refer [deftest is testing]]
             [langgraph.graph :as g]
             [talent.store :as store]
+            [talent.hrllm :as hrllm]
             [talent.operation :as op]))
 
 (defn- fresh []
@@ -150,3 +151,35 @@
         (is (= :commit (get-in r2 [:state :disposition])))
         (is (= :retention (:basis (store/assignment-of db "e-002"))) "record keeps the WHY")
         (is (= "カスタマーサクセス" (:dept (store/employee db "e-002"))))))))
+
+(deftest rationale-only-bias-escalates-to-a-human
+  (testing "check 7 (SOFT): a protected keyword in the free-text rationale with
+            CLEAN structured cites — a live model can do this — goes to a human
+            review, never auto-commits, and is NOT an unoverridable hold"
+    (let [[db actor] (fresh)
+          suspect-advisor (reify hrllm/Advisor
+                            (-advise [_ _ _]
+                              {:summary "評価ドラフト"
+                               :rationale "女性で時短勤務のため成長期待は限定的と判断。"
+                               :cites [:goals]     ;; clean structured cites
+                               :effect :set-goal-eval
+                               :stake nil
+                               :confidence 0.9}))
+          actor2 (op/build db {:advisor suspect-advisor})
+          res (exec-op actor2 "t-r1" {:op :evaluation/draft :subject "e-001"} hrbp)]
+      (is (= :interrupted (:status res)) "escalates for a human look")
+      (let [r2 (g/run* actor2 {:approval {:status :rejected :by "e-900"}}
+                       {:thread-id "t-r1" :resume? true})]
+        (is (= :hold (get-in r2 [:state :disposition])) "the human may reject it"))
+      (is (some? (store/employee db "e-001")) "store intact after the rejected escalation")
+      actor)))  ;; baseline actor from fresh is deliberately unused here
+
+(deftest clean-rationale-behavior-unchanged
+  (testing "check 7 does not disturb the clean path: op1's upsert rationale has
+            no protected keyword and still auto-commits at phase 3"
+    (let [[db actor] (fresh)
+          res (exec-op actor "t-r2"
+                    {:op :employee/upsert :subject "e-002"
+                     :patch {:id "e-002" :dept "営業推進"}} hrbp)]
+      (is (= :commit (get-in res [:state :disposition])))
+      (is (= "営業推進" (:dept (store/employee db "e-002")))))))
