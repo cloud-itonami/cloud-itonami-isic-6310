@@ -1,0 +1,225 @@
+;; Generates docs/index.html (the GitHub Pages demo UI) from EDN/Hiccup via
+;; kotoba-lang/html + kotoba-lang/css -- markup/styling as data, not
+;; hand-quoted HTML strings -- following kototama/web/generate.cljs's and
+;; cloud-itonami-isic-6399/web's own precedent (nbb authoring, zero build
+;; step for a visiting browser; in-browser interactivity is `search.cljs`
+;; run by scittle, i.e. ClojureScript in the browser, not a hand-written
+;; .js file).
+;;
+;; The people board AND the PolicyGovernor verdicts on the page are NOT
+;; hand-typed: this script requires the actor's own `talent.store` +
+;; `talent.policy` (.cljc, on langchain.db -- nbb-loadable since
+;; kotoba-lang/langchain 9f4453d3) and (a) reads the board from the real
+;; seeded Store, (b) recomputes each demo operation's verdict with the real
+;; `talent.policy/check`, so the published page can never drift from the
+;; actual compliance logic. The four PROPOSALS are mirrored inline from
+;; `talent.hrllm/infer`'s deterministic mock (keep in sync) -- hrllm itself
+;; is not yet nbb-loadable because langchain.model -> langchain.runnable
+;; extends cljs concrete types SCI can't analyze (tracked follow-up).
+;;
+;; Run (from this web/ directory, inside the monorepo checkout):
+;;   ../../../../node_modules/.bin/nbb \
+;;     --classpath "../src:../../../kotoba-lang/html/src:../../../kotoba-lang/css/src:../../../kotoba-lang/langchain/src" \
+;;     generate.cljs
+(require '[html.core :as html]
+         '[css.core :as css]
+         '[talent.store :as store]
+         '[talent.policy :as policy]
+         '["fs" :as fs])
+
+(def db (store/seed-db))
+(def employees (store/all-employees db))
+
+(def hrbp {:actor-id "e-900" :actor-role :hrbp :purpose :review :consent? true})
+
+;; The four kaonavi-equivalent demo operations (same set as talent.sim).
+;; Proposals mirror talent.hrllm/infer's deterministic mock output shapes.
+(def operations
+  [{:label "op1 従業員DB upsert（HRBP が部署を更新・正当）"
+    :request {:op :employee/upsert :subject "e-002"}
+    :context hrbp
+    :proposal {:summary "e-002 の部署を 営業推進 に更新"
+               :cites [:id :dept] :effect :upsert-employee
+               :stake nil :confidence 0.97}
+    :outcome "auto-commit（監査台帳に記録）"}
+   {:label "op2 評価ドラフトが性別・婚姻を判断根拠に引用"
+    :request {:op :evaluation/draft :subject "e-001"}
+    :context hrbp
+    :proposal {:summary "目標達成率と『女性で家庭も…』を踏まえた評価ドラフト"
+               :cites [:goals :gender :marital] :effect :set-goal-eval
+               :stake :grade-change :confidence 0.82}
+    :outcome nil}
+   {:label "op3 帳票 export（目的=headcount なのに病歴・年齢・性別の列を要求）"
+    :request {:op :report/export :subject "*"}
+    :context (assoc hrbp :purpose :headcount)
+    :proposal {:summary "全社員リスト（列: id name grade age health gender）"
+               :cites [:id :name :grade :age :health :gender]
+               :columns [:id :name :grade :age :health :gender]
+               :effect :report-export :stake nil :confidence 0.9}
+    :outcome nil}
+   {:label "op4 サーベイ分析（e-002 離職リスク high・重大かつ低確信）"
+    :request {:op :survey/analyze :subject "e-002"}
+    :context hrbp
+    :proposal {:summary "e-002 離職リスク high（engagement 2.1 / eNPS -40）"
+               :cites [:engagement :enps :free] :effect :store-insight
+               :stake :retention-action :confidence 0.55}
+    :outcome "人間承認へ escalate → HRBP が可決して commit"}])
+
+(defn run-op [{:keys [request context proposal] :as op}]
+  (let [v (policy/check request context proposal db)]
+    (assoc op :verdict v
+           :disposition (cond (:hard? v) :hold
+                              (:escalate? v) :escalate
+                              :else :commit))))
+
+(def results (mapv run-op operations))
+
+(def stylesheet
+  (css/style-node
+   {:rules
+    {":root" {:--fg "#1b1f24" :--bg "#ffffff" :--muted "#57606a"
+              :--card "#f6f8fa" :--line "#d0d7de" :--accent "#0b5cad"
+              :--ok-bg "#dafbe1" :--ok-fg "#116329"
+              :--hold-bg "#ffebe9" :--hold-fg "#a40e26"
+              :--esc-bg "#fff8c5" :--esc-fg "#7d4e00"}
+     "body" {:font-family "system-ui,-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif"
+             :margin "0 auto" :max-width 880 :padding "28px 20px 48px"
+             :color "var(--fg)" :background "var(--bg)" :line-height 1.55}
+     "header p.sub" {:color "var(--muted)" :margin-top 4}
+     "h1"   {:font-size 24 :margin "0"}
+     "h2"   {:font-size 17 :margin-top 40 :border-top "1px solid var(--line)"
+             :padding-top 24}
+     ".search" {:display :flex :gap 8 :margin-top 20}
+     "input#q" {:flex 1 :font-size 16 :padding "10px 14px"
+                :border "1.5px solid var(--line)" :border-radius 8
+                :background "var(--bg)" :color "var(--fg)"}
+     "#board" {:display :grid :grid-template-columns "repeat(auto-fill,minmax(250px,1fr))"
+               :gap 12 :margin-top 12}
+     ".card" {:background "var(--card)" :border "1px solid var(--line)"
+              :border-radius 10 :padding "14px 16px"}
+     ".card h3" {:margin "0 0 2px" :font-size 16}
+     ".card .meta" {:color "var(--muted)" :font-size 13.5}
+     ".card ul" {:margin "8px 0 0" :padding-left 18 :font-size 13.5}
+     ".badge" {:display :inline-block :font-size 12 :font-weight 600
+               :border-radius 20 :padding "2px 10px" :margin-left 8
+               :vertical-align "1px"}
+     ".badge.ok" {:background "var(--ok-bg)" :color "var(--ok-fg)"}
+     ".badge.hold" {:background "var(--hold-bg)" :color "var(--hold-fg)"}
+     ".badge.esc" {:background "var(--esc-bg)" :color "var(--esc-fg)"}
+     ".chip" {:display :inline-block :font-size 12 :color "var(--muted)"
+              :border "1px solid var(--line)" :border-radius 20
+              :padding "1px 9px" :margin-right 6}
+     "#empty" {:color "var(--muted)" :margin-top 16}
+     "table" {:border-collapse :collapse :width "100%" :margin-top 12
+              :font-size 13.5}
+     "th" {:text-align :left :color "var(--muted)" :font-weight 600
+           :border-bottom "1.5px solid var(--line)" :padding "6px 8px"}
+     "td" {:border-bottom "1px solid var(--line)" :padding "7px 8px"
+           :vertical-align :top}
+     "footer" {:margin-top 48 :padding-top 16 :border-top "1px solid var(--line)"
+               :color "var(--muted)" :font-size 13.5}
+     "a" {:color "var(--accent)"}
+     "code" {:background "var(--card)" :padding "1px 5px" :border-radius 4
+             :font-size "0.9em"}}
+    :media
+    {"(prefers-color-scheme: dark)"
+     {":root" {:--fg "#e6edf3" :--bg "#0d1117" :--muted "#8d96a0"
+               :--card "#161b22" :--line "#30363d" :--accent "#58a6ff"
+               :--ok-bg "#12261e" :--ok-fg "#3fb950"
+               :--hold-bg "#2d1215" :--hold-fg "#f85149"
+               :--esc-bg "#2b2411" :--esc-fg "#d29922"}}}}))
+
+(defn employee->json-entry [e]
+  (let [goals (store/goals-of db (:id e))
+        survey (store/survey-of db (:id e))
+        mgr (some->> (:manager e) (store/employee db) :name)]
+    {:id (:id e) :name (:name e)
+     :grade (name (:grade e)) :dept (:dept e)
+     :manager (or mgr "—")
+     :goals (mapv #(str (:title %) " — " (:actual %) "/" (:target %)
+                        (when (>= (:actual %) (:target %)) " ✓")) goals)
+     :engagement (if survey
+                   (str "engagement " (:engagement survey) " / eNPS " (:enps survey))
+                   "サーベイ未回答")}))
+
+(defn disposition-badge [d]
+  (case d
+    :commit  [:span.badge.ok "commit"]
+    :hold    [:span.badge.hold "HOLD"]
+    :escalate [:span.badge.esc "escalate → 人間承認"]))
+
+(def page
+  [:html {:lang "ja"}
+   [:head
+    [:meta {:charset "utf-8"}]
+    [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
+    [:title "Talent Board — governed HR (cloud-itonami-isic-6310)"]
+    [:meta {:name "description"
+            :content "kaonavi 等 HR SaaS のオープンソース置き換えデモ。人材データはあなたの手元、HR-LLM の全操作は独立 PolicyGovernor（RBAC・目的制限・公正性・最小開示）が検閲。"}]
+    stylesheet]
+   [:body
+    [:header
+     [:h1 "Talent Board " [:span.badge.ok "governed"]]
+     [:p.sub "人材データベース — HR SaaS (kaonavi 等) の OSS 置き換え。人材データを SaaS に人質に取られず、"
+      "HR-LLM の全操作を独立 PolicyGovernor が検閲する。 "
+      [:a {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310"} "cloud-itonami-isic-6310"]
+      " のライブデモ(合成データ)。"]]
+
+    [:div.search
+     [:input {:id "q" :type "search" :placeholder "氏名・部署で検索…" :autocomplete "off"}]]
+    [:div {:id "board"}]
+    [:p {:id "empty" :hidden true} "該当する社員はいません。"]
+    [:p [:span.meta "カードに年齢・性別・国籍・健康情報が無いのは仕様です — 保護属性は "
+         [:code "talent.policy/protected-attrs"]
+         " として評価根拠・帳票開示の両方から HARD ガードされています。"]]
+
+    [:h2 "PolicyGovernor — HR-LLM の operation がどう検閲されるか"]
+    [:p "kaonavi 型 SaaS との違いはここです: HR-LLM(advisor) は提案しか返せず、コミット権は"
+     "独立した "
+     [:a {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/src/talent/policy.cljc"}
+      "PolicyGovernor"]
+     " が握ります(HARD violation は人間の承認でも覆せません)。下表の判定はこのページの生成時に実際の "
+     [:code "talent.policy/check"] " を実行して得たものです。"]
+    [:table
+     [:thead [:tr [:th "operation"] [:th "判定"] [:th "根拠"]]]
+     (into [:tbody]
+           (for [{:keys [label disposition verdict outcome]} results]
+             [:tr
+              [:td label]
+              [:td (disposition-badge disposition)]
+              [:td (if-let [vs (seq (:violations verdict))]
+                     (into [:span] (for [v vs]
+                                     [:span [:span.badge.hold (name (:rule v))] " " (:detail v) [:br]]))
+                     (or outcome (str "confidence " (:confidence verdict))))]]))]
+
+    [:h2 "この人材ボードが保証すること"]
+    [:ul
+     [:li "保護属性(年齢・性別・国籍・信条・健康・婚姻・妊娠)は評価根拠にならない(" [:strong "公正性ゲート"] ")"]
+     [:li "帳票は宣言した目的に許された列しか出ない(" [:strong "最小開示ゲート"] ")"]
+     [:li "role × 操作 × 対象関係の RBAC を LLM が迂回できない"]
+     [:li "等級変更・退職勧奨など高影響の操作は必ず人間の承認を経る"]
+     [:li "すべての commit / hold / 承認が追記専用の監査台帳に残る"]]
+
+    [:footer
+     [:p "OSS (AGPL-3.0-or-later)。fork して自社の人材基盤として運営できます — "
+      [:a {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/business-model.md"} "business model"]
+      " · "
+      [:a {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/operator-guide.md"} "operator guide"]
+      " · 姉妹デモ: "
+      [:a {:href "https://cloud-itonami.github.io/cloud-itonami-isic-6399/"} "Meta Job Search (isic-6399)"]
+      "。このページは " [:code "web/generate.cljs"] " (nbb) が実 Store/PolicyGovernor を実行して生成し、検索は "
+      [:code "search.cljs"] " (scittle = ブラウザ内 ClojureScript) が実行しています。"]]
+
+    ;; employee board data for the in-browser search (search.cljs).
+    ;; [:hiccup/raw ...] because script elements are raw text -- entities
+    ;; are never decoded inside them (same as isic-6399's page).
+    [:script {:type "application/json" :id "board-data"}
+     [:hiccup/raw (js/JSON.stringify (clj->js (mapv employee->json-entry employees)))]]
+    [:script {:src "https://cdn.jsdelivr.net/npm/scittle@0.6.22/dist/scittle.js"}]
+    [:script {:type "application/x-scittle" :src "search.cljs"}]]])
+
+(fs/mkdirSync "../docs" #js {:recursive true})
+(fs/writeFileSync "../docs/index.html" (str "<!doctype html>\n" (html/render page) "\n"))
+(fs/copyFileSync "search.cljs" "../docs/search.cljs")
+(println (str "wrote docs/index.html (" (count employees) " employees; "
+              (pr-str (mapv :disposition results)) ")"))
