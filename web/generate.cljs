@@ -27,6 +27,7 @@
          '[langgraph.graph :as g]
          '[talent.store :as store]
          '[talent.operation :as op]
+         '[talent.report :as report]
          '["fs" :as fs])
 
 (def db (store/seed-db))
@@ -75,6 +76,13 @@
 
 (def results (mapv run-op! operations))
 (def ledger (store/ledger db))
+
+;; ReportActor output, computed from the POST-RUN store: the org chart
+;; reflects op5's committed retention move, and the CSV renders exactly
+;; the columns the minimal-disclosure gate allows for :headcount (the
+;; same purpose op3's greedy export was HELD for).
+(def org-chart (report/org-chart-text db "e-100"))
+(def headcount-csv (report/render-csv db [:id :name :grade :dept]))
 
 (def stylesheet
   (css/style-node
@@ -211,6 +219,16 @@
      [:code "talent.store"] " の台帳に書いた事実そのものです。"]
     (into [:pre]
           [(cstr/join "\n" (map store/ledger-line ledger))])
+
+    [:h2 "組織図 — ReportActor が実行後 Store から生成(kaonavi 組織図)"]
+    [:p "manager リンクからの純関数レンダリング。op5 のリテンション配置転換が反映済みです。"]
+    (into [:pre] [org-chart])
+
+    [:h2 "帳票 — 最小開示ゲートを通った CSV の実物"]
+    [:p "op3 の過剰開示(病歴・年齢・性別)は HOLD になりました。これは同じ :headcount 目的で"
+     "最小開示ゲートが許す列だけを実際にレンダリングした帳票です — 保護属性の列は"
+     "ポリシー上ここに現れることができません(" [:code "talent.policy/purpose-columns"] ")。"]
+    (into [:pre] [headcount-csv])
 
     [:h2 "この人材ボードが保証すること"]
     [:ul

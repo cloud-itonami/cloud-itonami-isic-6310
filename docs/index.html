@@ -116,6 +116,17 @@ hold · op=:report/export · actor=e-900 · subject=* · basis=[:minimal-disclos
 commit · op=:survey/analyze · actor=e-900 · subject=e-002 · basis=[:engagement :enps :free]
 commit · op=:assignment/propose · actor=e-900 · subject=e-002 · basis=[:goals :dept :engagement :enps]
 hold · op=:assignment/propose · actor=e-900 · subject=e-001 · basis=[:fairness]</pre>
+    <h2>組織図 — ReportActor が実行後 Store から生成(kaonavi 組織図)</h2>
+    <p>manager リンクからの純関数レンダリング。op5 のリテンション配置転換が反映済みです。</p>
+    <pre>└ 田中 部長 (G5 / 営業)
+  └ 佐藤 花子 (G3 / 営業)
+  └ 鈴木 太郎 (G2 / カスタマーサクセス)</pre>
+    <h2>帳票 — 最小開示ゲートを通った CSV の実物</h2>
+    <p>op3 の過剰開示(病歴・年齢・性別)は HOLD になりました。これは同じ :headcount 目的で最小開示ゲートが許す列だけを実際にレンダリングした帳票です — 保護属性の列はポリシー上ここに現れることができません(<code>talent.policy/purpose-columns</code>)。</p>
+    <pre>id,name,grade,dept
+e-001,佐藤 花子,:G3,営業
+e-002,鈴木 太郎,:G2,カスタマーサクセス
+e-100,田中 部長,:G5,営業</pre>
     <h2>この人材ボードが保証すること</h2>
     <ul>
       <li>保護属性(年齢・性別・国籍・信条・健康・婚姻・妊娠)は評価根拠にならない(<strong>公正性ゲート</strong>)</li>

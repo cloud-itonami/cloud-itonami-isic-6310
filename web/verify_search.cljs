@@ -94,4 +94,13 @@
 (assert! (.includes json-block "カスタマーサクセス") "board reflects op5's approved 配置転換")
 (assert! (.includes html "配置転換") "assignment rows present in verdict table")
 
+;; ReportActor sections computed from the post-run store
+(assert! (.includes html "└ 田中 部長") "org chart rendered from manager links")
+(assert! (.includes html "カスタマーサクセス)") "org chart reflects the retention move")
+(assert! (.includes html "id,name,grade,dept") "governed CSV renders the headcount-allowed columns")
+(let [csv-i (.indexOf html "id,name,grade,dept")
+      csv-block (.substring html csv-i (+ csv-i 400))]
+  (doseq [col ["health" "gender" "age"]]
+    (assert! (not (.includes csv-block col)) (str "governed CSV has no '" col "' column"))))
+
 (println "verify_search: all assertions passed")
