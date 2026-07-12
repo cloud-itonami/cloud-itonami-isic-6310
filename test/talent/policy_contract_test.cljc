@@ -103,3 +103,37 @@
       (exec-op actor "b" {:op :evaluation/draft :subject "e-001" :bias? true} hrbp)
       (is (= 2 (count (store/ledger db)))
           "one commit + one hold, both recorded"))))
+
+(deftest assignment-always-needs-human-then-commits
+  (testing "配置転換: a clean assignment proposal is high-stakes — it always escalates, and an approval actually moves the employee"
+    (let [[db actor] (fresh)
+          res (exec-op actor "t-a1"
+                       {:op :assignment/propose :subject "e-001" :to-dept "カスタマーサクセス"} hrbp)]
+      (is (= :interrupted (:status res)) "never auto-commits, even at phase 3")
+      (let [r2 (g/run* actor {:approval {:status :approved :by "e-900"}}
+                       {:thread-id "t-a1" :resume? true})]
+        (is (= :commit (get-in r2 [:state :disposition])))
+        (is (= "カスタマーサクセス" (:dept (store/employee db "e-001"))) "dept actually moved")
+        (is (= "営業" (:from-dept (store/assignment-of db "e-001"))) "record keeps from-dept")
+        (is (= "e-900" (:approved-by (store/assignment-of db "e-001"))) "record keeps approver")))))
+
+(deftest biased-assignment-is-held
+  (testing "配置転換 that cites age/health as grounds → fairness HOLD, dept unchanged"
+    (let [[db actor] (fresh)
+          before (:dept (store/employee db "e-002"))
+          res (exec-op actor "t-a2"
+                       {:op :assignment/propose :subject "e-002" :to-dept "倉庫管理" :bias? true} hrbp)]
+      (is (= :hold (get-in res [:state :disposition])))
+      (is (some #{:fairness} (-> (store/ledger db) first :basis)))
+      (is (= before (:dept (store/employee db "e-002"))) "SSoT unchanged")
+      (is (nil? (store/assignment-of db "e-002"))))))
+
+(deftest manager-cannot-propose-assignment
+  (testing "RBAC: assignment proposals are HRBP-only"
+    (let [[db actor] (fresh)
+          res (exec-op actor "t-a3"
+                       {:op :assignment/propose :subject "e-001" :to-dept "営業推進"}
+                       {:actor-id "e-100" :actor-role :manager
+                        :purpose :review :consent? true :phase 3})]
+      (is (= :hold (get-in res [:state :disposition])))
+      (is (some #{:rbac} (-> (store/ledger db) first :basis))))))

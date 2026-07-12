@@ -86,6 +86,32 @@
    :stake      (when (contains? patch :grade) :grade-change)
    :confidence 0.97})
 
+(defn- draft-assignment
+  "Assignment/transfer draft (配置転換). The `:bias?` flag injects the
+  failure mode we must defend against: citing PROTECTED attributes
+  (age/health) as grounds for moving someone off a role — the fairness
+  gate must reject it. A clean assignment is still ALWAYS a human call:
+  `:assignment-change` is in `talent.policy/high-stakes`."
+  [db {:keys [subject to-dept bias?]}]
+  (let [emp (store/employee db subject)
+        payload {:employee subject :from-dept (:dept emp) :dept to-dept}]
+    (if bias?
+      {:summary    (str (:name emp) " を " to-dept " へ配置転換（現場負荷の軽減）")
+       :rationale  "年齢と通院状況を考慮すると現部署の継続は負荷が高いと判断。"
+       :cites      [:dept :age :health]
+       :effect     :apply-assignment
+       :value      payload
+       :stake      :assignment-change
+       :confidence 0.8}
+      {:summary    (str (:name emp) " を " (:dept emp) " から " to-dept " へ配置転換")
+       :rationale  (str "目標達成状況と部門要員計画に基づく提案。対象目標 "
+                        (count (store/goals-of db subject)) " 件。")
+       :cites      [:goals :dept]
+       :effect     :apply-assignment
+       :value      payload
+       :stake      :assignment-change
+       :confidence 0.85})))
+
 (defn- propose-columns
   "Report column proposal. `:greedy?` injects over-disclosure (pulls
   protected columns) — the minimal-disclosure gate must reject it."
@@ -107,10 +133,11 @@
   request: {:op kw :subject id ...op-specific...}"
   [db {:keys [op] :as request}]
   (case op
-    :employee/upsert  (normalize-upsert db request)
-    :evaluation/draft (draft-evaluation db request)
-    :survey/analyze   (analyze-survey db request)
-    :report/export    (propose-columns db request)
+    :employee/upsert    (normalize-upsert db request)
+    :evaluation/draft   (draft-evaluation db request)
+    :survey/analyze     (analyze-survey db request)
+    :assignment/propose (draft-assignment db request)
+    :report/export      (propose-columns db request)
     {:summary "未対応の操作" :rationale (str op) :cites []
      :effect :noop :stake nil :confidence 0.0}))
 
@@ -131,7 +158,7 @@
   (str "あなたは人事の助言者です。与えられた事実のみに基づき、提案を1つだけ "
        "EDN マップで返します。説明や前置きは一切書かず、EDN だけを出力します。\n"
        "キー: :summary(人向けドラフト) :rationale(根拠/必ず事実から) "
-       ":cites(使った事実キーのベクタ) :effect(:set-goal-eval|:store-insight|:upsert-employee) "
+       ":cites(使った事実キーのベクタ) :effect(:set-goal-eval|:store-insight|:upsert-employee|:apply-assignment) "
        ":stake(:grade-change 等/無ければ nil) :confidence(0..1)。\n"
        "重要: 保護属性(:age :gender :nationality :creed :health :marital :pregnancy)を "
        "根拠(:cites/:rationale)にしてはいけません。"))

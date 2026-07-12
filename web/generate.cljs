@@ -50,6 +50,12 @@
     :context (assoc hrbp :purpose :headcount)}
    {:tid "op4" :label "op4 サーベイ分析（e-002 離職リスク high・重大かつ低確信）"
     :request {:op :survey/analyze :subject "e-002"}
+    :context hrbp}
+   {:tid "op5" :label "op5 配置転換ドラフト（e-001 をカスタマーサクセスへ・正当）"
+    :request {:op :assignment/propose :subject "e-001" :to-dept "カスタマーサクセス"}
+    :context hrbp}
+   {:tid "op5b" :label "op5b 配置転換が年齢・通院を判断根拠に引用"
+    :request {:op :assignment/propose :subject "e-002" :to-dept "倉庫管理" :bias? true}
     :context hrbp}])
 
 (defn run-op!

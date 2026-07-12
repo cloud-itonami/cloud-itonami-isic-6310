@@ -30,13 +30,17 @@
 (def confidence-floor 0.6)
 
 (def high-stakes
-  "Operations grave enough to always require a human, even when clean."
-  #{:grade-change :termination :pay-cut :retention-action})
+  "Operations grave enough to always require a human, even when clean.
+  :assignment-change (配置転換) belongs here: moving a real person to a
+  real role is never an auto-commit, exactly like a grade change."
+  #{:grade-change :termination :pay-cut :retention-action :assignment-change})
 
 (def permissions
   "role → set of operations it may perform. `:manager` is further
-  restricted to its own reports by `subject-allowed?`."
-  {:hrbp     #{:employee/upsert :evaluation/draft :survey/analyze :report/export}
+  restricted to its own reports by `subject-allowed?`. Assignment
+  proposals are HRBP-only: a line manager drafts evaluations for their
+  reports but does not move people between departments."
+  {:hrbp     #{:employee/upsert :evaluation/draft :survey/analyze :report/export :assignment/propose}
    :manager  #{:evaluation/draft :survey/analyze}
    :employee #{}})
 

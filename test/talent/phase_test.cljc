@@ -64,3 +64,14 @@
   (testing "a hard policy violation holds even in the most permissive phase"
     (let [[_ res] (run 3 {:op :evaluation/draft :subject "e-001" :bias? true} hrbp)]
       (is (= :hold (get-in res [:state :disposition]))))))
+
+(deftest assignment-phase-slotting
+  (testing "配置転換 is not writable in assisted-eval (phase 1), writable from phase 2, and never auto-commits anywhere (policy high-stakes)"
+    (let [assign {:op :assignment/propose :subject "e-001" :to-dept "カスタマーサクセス"}]
+      (let [[s res] (run 1 assign hrbp)]
+        (is (= :hold (get-in res [:state :disposition])) "phase 1: :phase-disabled")
+        (is (nil? (store/assignment-of s "e-001"))))
+      (let [[_ res] (run 2 assign hrbp)]
+        (is (= :interrupted (:status res)) "phase 2: goes to human approval"))
+      (let [[_ res] (run 3 assign hrbp)]
+        (is (= :interrupted (:status res)) "phase 3: still a human call — high-stakes wins over :auto")))))

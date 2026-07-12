@@ -78,6 +78,9 @@
 (assert! (.includes html "basis=[:fairness]") "ledger has op2 fairness hold fact")
 (assert! (.includes html "basis=[:minimal-disclosure]") "ledger has op3 disclosure hold fact")
 (assert! (.includes html "op=:survey/analyze") "ledger has op4 survey fact")
+(assert! (.includes html "op=:assignment/propose") "ledger has op5 assignment facts")
 (assert! (.includes json-block "営業推進") "board reflects op1's committed dept change")
+(assert! (.includes json-block "カスタマーサクセス") "board reflects op5's approved 配置転換")
+(assert! (.includes html "配置転換") "assignment rows present in verdict table")
 
 (println "verify_search: all assertions passed")

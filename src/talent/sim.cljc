@@ -8,6 +8,9 @@
     op3  帳票 export が病歴/年齢を過剰列に含む          → 最小開示 REJECT → hold
     op4  サーベイ分析が離職リスク high（重大・低確信）  → 人間承認へ escalate
                                                        → HRBP approve → commit
+    op5  配置転換ドラフト（正当）                       → 高影響 escalate
+                                                       → HRBP approve → commit
+    op5b 配置転換が年齢・通院を判断根拠に引用           → 公正性 REJECT → hold
 
   Run: clojure -M:dev:run"
   (:require [langgraph.graph :as g]
@@ -74,6 +77,16 @@
     (line "\nop4  サーベイ分析（e-002 離職リスク high・重大かつ低確信 → 人間承認）")
     (run-op! actor "op4"
              {:op :survey/analyze :subject "e-002"}
+             hrbp true)
+
+    (line "\nop5  配置転換ドラフト（e-001 をカスタマーサクセスへ・正当 → 人間承認）")
+    (run-op! actor "op5"
+             {:op :assignment/propose :subject "e-001" :to-dept "カスタマーサクセス"}
+             hrbp true)
+
+    (line "\nop5b 配置転換 — 年齢・通院を根拠に引用（公正性 REJECT → hold）")
+    (run-op! actor "op5b"
+             {:op :assignment/propose :subject "e-002" :to-dept "倉庫管理" :bias? true}
              hrbp true)
 
     (line "\n── 帳票（最小開示で許可された列のみ・headcount 目的）──")

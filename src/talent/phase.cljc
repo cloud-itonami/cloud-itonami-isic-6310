@@ -18,14 +18,22 @@
   plus a reason when the phase changed it.")
 
 (def read-ops  #{:report/export})
-(def write-ops #{:employee/upsert :evaluation/draft :survey/analyze})
+(def write-ops #{:employee/upsert :evaluation/draft :survey/analyze :assignment/propose})
 
 (def phases
   "phase → {:label .. :writes <ops allowed to write> :auto <ops allowed to
-  auto-commit when policy-clean>}."
+  auto-commit when policy-clean>}.
+
+  :assignment/propose (配置転換) is a write from phase 2 up. Phase 3's
+  :auto set formally contains it (= write-ops, the same shape every other
+  write uses), but it can never actually auto-commit: its proposals always
+  carry :stake :assignment-change, which `talent.policy/high-stakes`
+  escalates to a human before the phase gate is even consulted — the same
+  policy-side mechanism that keeps :retention-action survey findings and
+  :grade-change upserts human-gated."
   {0 {:label "read-only"       :writes #{}                                          :auto #{}}
    1 {:label "assisted-eval"   :writes #{:employee/upsert :evaluation/draft}        :auto #{}}
-   2 {:label "assisted-insight":writes #{:employee/upsert :evaluation/draft :survey/analyze} :auto #{}}
+   2 {:label "assisted-insight":writes #{:employee/upsert :evaluation/draft :survey/analyze :assignment/propose} :auto #{}}
    3 {:label "supervised-auto" :writes write-ops                                    :auto write-ops}})
 
 (def default-phase
