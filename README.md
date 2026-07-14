@@ -137,7 +137,8 @@ approves → commit**), then prints the immutable audit ledger.
 | `src/talent/facts.cljc` | **seed adapter** — hydrate employees/goals/surveys from `m365-archive/facts` (annex-aware fallback) |
 | `src/talent/report.cljc` | **ReportActor** — governed CSV/帳票 + org-chart projection |
 | `src/talent/sim.cljc` | demo driver |
-| `test/talent/*_test.cljc` | policy contract · store parity (Mem≡Datomic) · LLM advisor · phase rollout · facts — **32 tests / 118 assertions** |
+| `wasm/achievement_band.kotoba` | WASM port (`kotoba wasm emit` → `kototama.tender`) of `talent.hrllm`'s MBO/OKR achievement-rate + threshold-band formula — see `wasm/README.md` |
+| `test/talent/*_test.cljc` + `test/wasm/*_test.clj` | policy contract · store parity (Mem≡Datomic) · LLM advisor · phase rollout · facts · WASM achievement-band — **41 tests / 135 assertions** |
 
 ## kaonavi 相当機能の対応
 
