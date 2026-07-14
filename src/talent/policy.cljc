@@ -6,19 +6,29 @@
   a proposal and fall back to HOLD (write nothing) — the HR analog of
   robotaxi's Minimal Risk Condition.
 
-  Six checks, in priority order. The first four are HARD violations: a
+  Seven checks, in priority order. The first four are HARD violations: a
   human approver CANNOT override them (you don't get to approve your way
-  past a discrimination or a permission breach). The last two are SOFT:
-  they only ask a human to look (low confidence / high-stakes), and the
-  human may approve.
+  past a discrimination or a permission breach). The last three are SOFT:
+  they only ask a human to look (low confidence / high-stakes / a
+  suspect rationale), and the human may approve.
 
     1. RBAC                — role × operation × subject-relation permitted?
     2. Purpose limitation  — declared purpose + subject consent/legal basis?
     3. Fairness            — did the rationale cite a PROTECTED attribute?
     4. Minimal disclosure  — does an export exceed the purpose's allowed cols?
     5. Confidence floor    — LLM confidence below threshold → escalate.
-    6. High-stakes gate    — grade-change/termination/... → escalate."
+    6. High-stakes gate    — grade-change/termination/... → escalate.
+    7. Rationale suspect   — a protected-attribute KEYWORD in the free-text
+                             rationale → escalate (SOFT, deliberately: free
+                             text is too coarse for an unoverridable gate —
+                             「性別を判断根拠にしていない」 would match 性別 —
+                             so a match costs one human review, never a
+                             suppression. The HARD fairness gate stays on
+                             the structured :cites. Added when live-model
+                             runs showed a real LLM can write 「女性なので…」
+                             in the rationale while reporting clean cites.)"
   (:require [clojure.set :as set]
+            [clojure.string :as str]
             [talent.store :as store]))
 
 ;; ───────────────────────── policy tables ─────────────────────────
@@ -29,14 +39,23 @@
 
 (def confidence-floor 0.6)
 
+(def rationale-suspect-terms
+  "High-precision starter keywords for check 7 (rationale suspect) —
+  extend per deployment; matches escalate, never hold."
+  ["女性" "男性" "性別" "年齢" "妊娠" "国籍" "通院" "持病" "既婚" "未婚" "家庭"])
+
 (def high-stakes
-  "Operations grave enough to always require a human, even when clean."
-  #{:grade-change :termination :pay-cut :retention-action})
+  "Operations grave enough to always require a human, even when clean.
+  :assignment-change (配置転換) belongs here: moving a real person to a
+  real role is never an auto-commit, exactly like a grade change."
+  #{:grade-change :termination :pay-cut :retention-action :assignment-change})
 
 (def permissions
   "role → set of operations it may perform. `:manager` is further
-  restricted to its own reports by `subject-allowed?`."
-  {:hrbp     #{:employee/upsert :evaluation/draft :survey/analyze :report/export}
+  restricted to its own reports by `subject-allowed?`. Assignment
+  proposals are HRBP-only: a line manager drafts evaluations for their
+  reports but does not move people between departments."
+  {:hrbp     #{:employee/upsert :evaluation/draft :survey/analyze :report/export :assignment/propose}
    :manager  #{:evaluation/draft :survey/analyze}
    :employee #{}})
 
@@ -90,10 +109,18 @@
         [{:rule :minimal-disclosure
           :detail (str "目的 " purpose " に対し過剰な列: " (vec extra))}]))))
 
+(defn- rationale-suspect?
+  "Check 7: a protected-attribute keyword in an evaluative proposal's
+  free-text rationale. SOFT — see the ns docstring."
+  [{:keys [op]} proposal]
+  (and (not= op :report/export)
+       (let [r (str (:rationale proposal))]
+         (boolean (some #(str/includes? r %) rationale-suspect-terms)))))
+
 (defn check
   "Censors an HR-LLM proposal against the policy tables. Returns
    {:ok? bool :violations [..] :confidence c :escalate? bool :high-stakes? bool
-    :hard? bool}.
+    :rationale-suspect? bool :hard? bool}.
 
    - :hard?       — at least one HARD violation (RBAC/purpose/fairness/
                     disclosure). Forces HOLD; a human cannot override.
@@ -109,14 +136,16 @@
         conf    (:confidence proposal 0.0)
         low?    (< conf confidence-floor)
         stakes? (boolean (high-stakes (:stake proposal)))
+        suspect? (rationale-suspect? request proposal)
         hard?   (boolean (seq hard))]
-    {:ok?         (and (not hard?) (not low?) (not stakes?))
+    {:ok?         (and (not hard?) (not low?) (not stakes?) (not suspect?))
      :violations  hard
      :confidence  conf
      :hard?       hard?
      ;; soft escalation only matters when there is no hard violation —
      ;; a hard violation always wins and goes straight to HOLD.
-     :escalate?   (and (not hard?) (or low? stakes?))
+     :escalate?   (and (not hard?) (or low? stakes? suspect?))
+     :rationale-suspect? suspect?
      :high-stakes? stakes?}))
 
 (defn hold-fact

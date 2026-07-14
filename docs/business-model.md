@@ -64,12 +64,32 @@ Operators can sell:
 
 Example pricing should be adapted by country and support burden:
 
-| Package | Customer | Price shape |
+| Package | Customer | Price shape (illustrative) |
 |---|---|---|
-| Self-host starter | small organization | setup fee + optional support |
-| Managed standard | 50-200 employees | monthly platform fee |
-| Managed regulated | sensitive HR process | monthly fee + audit package |
+| Self-host starter | small organization | setup ¥300k–800k + optional support |
+| Managed standard | 50-200 employees | ¥60k–150k/月 per tenant |
+| Managed regulated | sensitive HR process | ¥200k+/月 + audit package |
 | Operator enablement | consultant/SI | training + certification |
+
+The anchor: proprietary HR SaaS is typically priced per employee per month,
+forever, with the data inside the vendor. A managed tenant here is priced per
+tenant, the data stays in the customer's own store (in-mem/Datomic/
+kotoba-server — the Store seam), and the policy logic is inspectable AGPL
+code. That is the switching pitch.
+
+## Funnel (demo → fork → certified operator)
+
+1. **Demo** — the live GitHub Pages demo
+   (<https://cloud-itonami.github.io/cloud-itonami-isic-6310/>) shows the
+   Talent Board with protected attributes structurally absent, and the
+   PolicyGovernor verdict table (fairness HOLD, minimal-disclosure HOLD,
+   escalation) recomputed from the actual `.cljc` compliance code at page
+   build — the sovereignty + governance pitch in one screen.
+2. **Fork / self-host** — AGPL; run it for one organization.
+3. **Managed operation** — an SI/consultant operates tenants; policy packs
+   (roles/purposes/disclosure columns) are the customization surface.
+4. **itonami.cloud certification** — listed operators get leads and may run
+   managed HR tenants (same trust ladder as every cloud-itonami venture).
 
 ## Unit Economics
 
@@ -82,6 +102,15 @@ Track these numbers for every operator:
 - incident and audit hours
 - gross margin after infrastructure and support
 - churn and expansion revenue
+
+Worked example (illustrative, one managed 100-employee tenant): actor +
+store infrastructure ≈ ¥10k–20k/月 (writes are governed operations, reads
+are cheap); LLM cost is bounded because only proposals call a model
+(evaluation cycles + survey analyses, not every read); the real cost is HR
+approval labor and support — budget ~10 h/月 until policy packs stabilize,
+then ~3–5 h/月. At ¥100k/月 that is >70% gross margin at steady state; the
+business scales with tenants, not headcount, and expansion revenue is
+policy customization + the compliance package.
 
 The business should only scale after setup work is repeatable and policy tests
 catch customer-specific misconfiguration before production use.

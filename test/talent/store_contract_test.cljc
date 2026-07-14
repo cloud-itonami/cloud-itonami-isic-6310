@@ -50,3 +50,15 @@
     (is (= [] (store/ledger s)))
     (store/with-employees s {"x" {:id "x" :name "X" :grade :G1 :dept "d"}})
     (is (= "X" (:name (store/employee s "x"))))))
+
+(deftest apply-assignment-parity
+  (doseq [[label s] (backends)]
+    (testing label
+      (store/commit-record! s {:effect :apply-assignment :path ["e-001"]
+                               :value {:employee "e-001" :from-dept "営業" :dept "カスタマーサクセス"}
+                               :payload {:summary "配置転換" :approved-by "e-900"}})
+      (is (= "カスタマーサクセス" (:dept (store/employee s "e-001"))) "dept actually moved")
+      (is (= "営業" (:from-dept (store/assignment-of s "e-001"))) "assignment record keeps from-dept")
+      (is (= "e-900" (:approved-by (store/assignment-of s "e-001"))) "assignment record keeps approver")
+      (is (= "佐藤 花子" (:name (store/employee s "e-001"))) "unrelated fields preserved")
+      (is (nil? (store/assignment-of s "e-002")) "no phantom assignment on other employees"))))

@@ -40,6 +40,21 @@
     (is (= :interrupted (:status res)))
     (is (= :phase-approval (-> res :state :audit last :reason)))))
 
+(deftest missing-phase-context-does-not-grant-max-autonomy
+  ;; default-phase is the fallback both when :phase is entirely absent from
+  ;; context (talent.operation) and when an unrecognized phase number is
+  ;; passed (phase/gate). It used to be 3 -- the single most permissive
+  ;; tier, where every write auto-commits -- so a caller that simply
+  ;; forgot to set :phase silently got MAXIMUM autonomy instead of the
+  ;; safe "start narrow" default this namespace's own docstring promises.
+  (testing "omitting :phase from context still requires human approval on a clean write"
+    (let [s (store/seed-db)
+          actor (op/build s)
+          res (g/run* actor {:request upsert :context hrbp} {:thread-id "ph-missing"})]
+      (is (not= :commit (get-in res [:state :disposition]))
+          "a clean write must not auto-commit when :phase is unset")
+      (is (= "営業" (:dept (store/employee s "e-002"))) "SSoT untouched without explicit phase"))))
+
 (deftest phase3-auto-commits-clean-write
   (let [[s res] (run 3 upsert hrbp)]
     (is (= :commit (get-in res [:state :disposition])))
@@ -49,3 +64,14 @@
   (testing "a hard policy violation holds even in the most permissive phase"
     (let [[_ res] (run 3 {:op :evaluation/draft :subject "e-001" :bias? true} hrbp)]
       (is (= :hold (get-in res [:state :disposition]))))))
+
+(deftest assignment-phase-slotting
+  (testing "配置転換 is not writable in assisted-eval (phase 1), writable from phase 2, and never auto-commits anywhere (policy high-stakes)"
+    (let [assign {:op :assignment/propose :subject "e-001" :to-dept "カスタマーサクセス"}]
+      (let [[s res] (run 1 assign hrbp)]
+        (is (= :hold (get-in res [:state :disposition])) "phase 1: :phase-disabled")
+        (is (nil? (store/assignment-of s "e-001"))))
+      (let [[_ res] (run 2 assign hrbp)]
+        (is (= :interrupted (:status res)) "phase 2: goes to human approval"))
+      (let [[_ res] (run 3 assign hrbp)]
+        (is (= :interrupted (:status res)) "phase 3: still a human call — high-stakes wins over :auto")))))

@@ -11,7 +11,7 @@
                        `langchain.db`'s `:db-api` (see langchain.kotoba-db).
 
   Both implement the same protocol and pass the same contract
-  (test/talent/store_contract_test.clj), which is the whole point: the actor,
+  (test/talent/store_contract_test.cljc), which is the whole point: the actor,
   the PolicyGovernor and the audit ledger never know which SSoT they run on.
 
   The ledger stays append-only on every backend — 'who changed/disclosed
@@ -30,6 +30,7 @@
   (survey-of [s id])
   (evaluation-of [s id] "committed evaluation payload for an employee, or nil")
   (insight-of [s id]    "committed survey insight payload for an employee, or nil")
+  (assignment-of [s id] "committed assignment (配置転換) record for an employee, or nil")
   (ledger [s])
   (commit-record! [s record] "apply a committed op's record to the SSoT")
   (append-ledger! [s fact]   "append one immutable decision fact")
@@ -75,12 +76,20 @@
   (survey-of [_ id] (get-in @a [:surveys id]))
   (evaluation-of [_ id] (get-in @a [:evaluations id]))
   (insight-of [_ id] (get-in @a [:insights id]))
+  (assignment-of [_ id] (get-in @a [:assignments id]))
   (ledger [_] (:ledger @a))
   (commit-record! [s {:keys [effect path value payload]}]
     (case effect
       :upsert-employee (swap! a update-in [:employees (:id value)] merge value)
       :set-goal-eval   (swap! a assoc-in [:evaluations (first path)] payload)
       :store-insight   (swap! a assoc-in [:insights (first path)] payload)
+      ;; assignment (配置転換): apply the dept move to the directory AND
+      ;; keep the full record (from/to + decision metadata) queryable.
+      :apply-assignment
+      (swap! a (fn [st]
+                 (-> st
+                     (update-in [:employees (first path)] merge (select-keys value [:dept]))
+                     (assoc-in [:assignments (first path)] (merge value payload)))))
       nil)
     s)
   (append-ledger! [_ fact] (swap! a update :ledger conj fact) fact)
@@ -91,7 +100,7 @@
 (defn seed-db
   "A MemStore seeded with the demo org. The deterministic default."
   []
-  (->MemStore (atom (assoc (demo-data) :evaluations {} :insights {} :ledger []))))
+  (->MemStore (atom (assoc (demo-data) :evaluations {} :insights {} :assignments {} :ledger []))))
 
 ;; ───────────────────────── DatomicStore (langchain.db) ─────────────────────────
 
@@ -106,6 +115,7 @@
    :survey/emp  {:db/valueType :db.type/ref :db/unique :db.unique/identity}
    :eval/emp    {:db/valueType :db.type/ref :db/unique :db.unique/identity}
    :insight/emp {:db/valueType :db.type/ref :db/unique :db.unique/identity}
+   :assignment/emp {:db/valueType :db.type/ref :db/unique :db.unique/identity}
    :ledger/seq  {:db/unique :db.unique/identity}})
 
 (defn- enc [v] (pr-str v))
@@ -176,6 +186,10 @@
     (dec* (d/q '[:find ?p . :in $ ?eid
                  :where [?e :emp/id ?eid] [?v :insight/emp ?e] [?v :insight/payload ?p]]
                (d/db conn) id)))
+  (assignment-of [_ id]
+    (dec* (d/q '[:find ?p . :in $ ?eid
+                 :where [?e :emp/id ?eid] [?v :assignment/emp ?e] [?v :assignment/payload ?p]]
+               (d/db conn) id)))
   (ledger [_]
     (->> (d/q '[:find ?s ?f :where [?e :ledger/seq ?s] [?e :ledger/fact ?f]] (d/db conn))
          (sort-by first)
@@ -187,6 +201,10 @@
                                            :eval/payload (enc payload)}])
       :store-insight   (d/transact! conn [{:insight/emp [:emp/id (first path)]
                                            :insight/payload (enc payload)}])
+      :apply-assignment
+      (d/transact! conn [(emp->tx {:id (first path) :dept (:dept value)})
+                         {:assignment/emp [:emp/id (first path)]
+                          :assignment/payload (enc (merge value payload))}])
       nil)
     s)
   (append-ledger! [s fact]

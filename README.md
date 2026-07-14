@@ -25,11 +25,47 @@ interrupts, Datomic/in-mem checkpoints) — the same actor pattern as
 > **audit ledger** — the compliance, sovereignty and auditability a SaaS
 > either charges for or won't give you at all.
 
+## Live demo (GitHub Pages)
+
+**<https://cloud-itonami.github.io/cloud-itonami-isic-6310/>** -- a
+static, zero-build Talent Board over the demo org (synthetic data),
+plus a PolicyGovernor verdict table for the four kaonavi-equivalent
+operations. The board, the verdicts AND the audit
+ledger are not hand-typed: `web/generate.cljs` (nbb) runs the FULL
+OperationActor StateGraph (advisor -> PolicyGovernor -> phase gate ->
+approval interrupt) for the four operations at build time and renders
+the post-run Store plus the append-only ledger those runs wrote; protected attributes are
+structurally absent from the page data (that's the minimum-disclosure
+gate working). In-browser search is `web/search.cljs` run by scittle
+(ClojureScript in the browser -- no hand-written JS, no build step),
+and `web/verify_search.cljs` is the headless nbb harness that
+exercises the real client logic against the real generated page.
+
+```bash
+cd web && ../../../../node_modules/.bin/nbb \
+  --classpath "../src:../../../kotoba-lang/html/src:../../../kotoba-lang/css/src:../../../kotoba-lang/langchain/src:../../../kotoba-lang/langgraph/src" \
+  generate.cljs          # regenerate docs/index.html + docs/search.cljs
+../../../../node_modules/.bin/nbb verify_search.cljs   # headless UI logic check
+```
+
+See [`docs/operator-quickstart.md`](docs/operator-quickstart.md) to go
+from fork to a private production instance (seed your org, customize
+the policy pack, wire approvals, phase rollout).
+
 See [`docs/DESIGN.md`](docs/DESIGN.md) for the full architecture and
 [`docs/adr/0001-architecture.md`](docs/adr/0001-architecture.md) for the
 decision record. See [`docs/business-model.md`](docs/business-model.md) and
 [`docs/operator-guide.md`](docs/operator-guide.md) to start this as an open
 business on itonami.cloud.
+## Robotics premise
+
+All cloud-itonami verticals are designed on the premise that a **robot performs
+the physical domain work**. As the reference implementation, 6310 models the
+actor pattern (HR-LLM sealed in one node) that governs such a robot's actions:
+the actor proposes, an independent PolicyGovernor gates, and the audit ledger
+records every commit, hold and approval. The same pattern gates hardware
+dispatch in robotics verticals via `kotoba-lang/robotics`.
+
 
 ## Open business
 
@@ -101,7 +137,8 @@ approves → commit**), then prints the immutable audit ledger.
 | `src/talent/facts.cljc` | **seed adapter** — hydrate employees/goals/surveys from `m365-archive/facts` (annex-aware fallback) |
 | `src/talent/report.cljc` | **ReportActor** — governed CSV/帳票 + org-chart projection |
 | `src/talent/sim.cljc` | demo driver |
-| `test/talent/*_test.cljc` | policy contract · store parity (Mem≡Datomic) · LLM advisor · phase rollout · facts — **26 tests / 91 assertions** |
+| `wasm/achievement_band.kotoba` | WASM port (`kotoba wasm emit` → `kototama.tender`) of `talent.hrllm`'s MBO/OKR achievement-rate + threshold-band formula — see `wasm/README.md` |
+| `test/talent/*_test.cljc` + `test/wasm/*_test.clj` | policy contract · store parity (Mem≡Datomic) · LLM advisor · phase rollout · facts · WASM achievement-band — **41 tests / 135 assertions** |
 
 ## kaonavi 相当機能の対応
 
@@ -110,6 +147,7 @@ approves → commit**), then prints the immutable audit ledger.
 | 従業員DB / 組織図 | `store` employees/org + `:employee/upsert` |
 | 人事評価・目標 MBO/OKR | `:evaluation/draft`（LLMドラフト）+ 承認ワークフロー |
 | エンゲージメントサーベイ・離職予兆 | `:survey/analyze`（LLM + governor） |
+| 配置転換・異動シミュレーション | `:assignment/propose`（高影響=常時人間承認、保護属性根拠は公正性ゲートが拒否、from/to+承認者を台帳化。`:retention?` でサーベイ所見起点の施策として起票 — 記録に `:basis :retention`、根拠は業務シグナルのみ） |
 | 帳票・CSV 出力 | `report` governed export（最小開示ゲート） |
 | 承認フロー | `interrupt-before :request-approval`（human-in-the-loop） |
 | アクセス権限 | PolicyGovernor RBAC 表 |
@@ -167,3 +205,5 @@ Code is licensed under AGPL-3.0-or-later. Documentation and business-blueprint
 text are intended for open reuse with attribution and share-alike expectations;
 platform certification and the `itonami.cloud` trust mark are governed
 separately.
+
+A live sample of the operator console is rendered in [docs/samples/operator-console.html](docs/samples/operator-console.html) — pure-data HTML output of the kotoba-lang capability UI.

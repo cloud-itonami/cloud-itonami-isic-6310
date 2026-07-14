@@ -18,17 +18,40 @@
   plus a reason when the phase changed it.")
 
 (def read-ops  #{:report/export})
-(def write-ops #{:employee/upsert :evaluation/draft :survey/analyze})
+(def write-ops #{:employee/upsert :evaluation/draft :survey/analyze :assignment/propose})
 
 (def phases
   "phase → {:label .. :writes <ops allowed to write> :auto <ops allowed to
-  auto-commit when policy-clean>}."
+  auto-commit when policy-clean>}.
+
+  :assignment/propose (配置転換) is a write from phase 2 up. Phase 3's
+  :auto set formally contains it (= write-ops, the same shape every other
+  write uses), but it can never actually auto-commit: its proposals always
+  carry :stake :assignment-change, which `talent.policy/high-stakes`
+  escalates to a human before the phase gate is even consulted — the same
+  policy-side mechanism that keeps :retention-action survey findings and
+  :grade-change upserts human-gated."
   {0 {:label "read-only"       :writes #{}                                          :auto #{}}
    1 {:label "assisted-eval"   :writes #{:employee/upsert :evaluation/draft}        :auto #{}}
-   2 {:label "assisted-insight":writes #{:employee/upsert :evaluation/draft :survey/analyze} :auto #{}}
+   2 {:label "assisted-insight":writes #{:employee/upsert :evaluation/draft :survey/analyze :assignment/propose} :auto #{}}
    3 {:label "supervised-auto" :writes write-ops                                    :auto write-ops}})
 
-(def default-phase 3)
+(def default-phase
+  "The phase used when `context` carries no :phase at all (talent.operation:
+  `(:phase context phase/default-phase)`), AND the fallback `gate` itself
+  uses for an unrecognized phase NUMBER (`(get phases phase (get phases
+  default-phase))`). This is directly reachable by any ordinary caller
+  that simply omits :phase -- not just malformed/malicious input -- so it
+  must be the MOST CONSERVATIVE phase, never the most permissive: 'start
+  narrow, widen as trust grows' (this namespace's own docstring) has to
+  hold for a MISSING phase too, not only an explicitly-set low one. This
+  was 3 (supervised-auto, the single most permissive tier -- every write
+  auto-commits) until a live check confirmed a caller who forgets :phase
+  silently got maximum autonomy instead of the safe default. 1
+  (assisted-eval) matches the sibling ports' own choice here
+  (tsumugu.phase / shiropico.phase default-phase 1) -- writes are allowed
+  but every one still needs human approval."
+  1)
 
 (defn gate
   "Adjust a policy disposition for the rollout phase. Returns

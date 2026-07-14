@@ -8,6 +8,10 @@
     op3  帳票 export が病歴/年齢を過剰列に含む          → 最小開示 REJECT → hold
     op4  サーベイ分析が離職リスク high（重大・低確信）  → 人間承認へ escalate
                                                        → HRBP approve → commit
+    op5  配置転換ドラフト（op4 の高リスク所見を受けた
+         リテンション施策・根拠はサーベイ業務シグナル）  → 高影響 escalate
+                                                       → HRBP approve → commit
+    op5b 配置転換が年齢・通院を判断根拠に引用           → 公正性 REJECT → hold
 
   Run: clojure -M:dev:run"
   (:require [langgraph.graph :as g]
@@ -41,7 +45,14 @@
 (defn -main [& _]
   (let [db    (store/seed-db)
         actor (op/build db)
-        hrbp  {:actor-id "e-900" :actor-role :hrbp :purpose :review :consent? true}]
+        ;; :phase 3 explicitly -- the narrative below (op1 auto-commits,
+        ;; op4 escalates for approval) is the supervised-auto tier. Since
+        ;; talent.phase/default-phase became 1 (assisted-eval -- a missing
+        ;; :phase must get the conservative default, not the permissive
+        ;; one), omitting :phase here would instead give op1 :phase-approval
+        ;; and op4 :phase-disabled. The Phase 0→3 section at the end still
+        ;; varies :phase per run.
+        hrbp  {:actor-id "e-900" :actor-role :hrbp :purpose :review :consent? true :phase 3}]
 
     (line "── 従業員DB / 組織図 (DirectoryActor) ──")
     (line (report/org-chart-text db "e-100"))
@@ -67,6 +78,16 @@
     (line "\nop4  サーベイ分析（e-002 離職リスク high・重大かつ低確信 → 人間承認）")
     (run-op! actor "op4"
              {:op :survey/analyze :subject "e-002"}
+             hrbp true)
+
+    (line "\nop5  配置転換 — op4 の高リスク所見を受けたリテンション施策（e-002 → カスタマーサクセス、根拠はサーベイ業務シグナルのみ）")
+    (run-op! actor "op5"
+             {:op :assignment/propose :subject "e-002" :to-dept "カスタマーサクセス" :retention? true}
+             hrbp true)
+
+    (line "\nop5b 配置転換 — 年齢・通院を根拠に引用（公正性 REJECT → hold）")
+    (run-op! actor "op5b"
+             {:op :assignment/propose :subject "e-001" :to-dept "倉庫管理" :bias? true}
              hrbp true)
 
     (line "\n── 帳票（最小開示で許可された列のみ・headcount 目的）──")
