@@ -1,0 +1,30 @@
+(ns cloud-itonami-achievement-band)
+
+(defn achievement-band [sum-actual sum-target]
+  (if (> sum-target 0)
+    (let [rate-permille (quot (* sum-actual 1000) sum-target)]
+      (if (>= rate-permille 1000)
+        2
+        (if (>= rate-permille 700)
+          1
+          0)))
+    0))
+
+;; ABI: `main` stays 0-arity (the compiler rejects a parameterized main --
+;; :main-arity, see kotoba-lang/kotoba's compile-wasm-expr) and reads its
+;; two real i32 inputs out of the exported linear memory instead, at
+;; fixed byte offsets a host writes into before calling main() (same
+;; convention as cloud-itonami-isic-6492's affordability.kotoba /
+;; cloud-itonami-isic-6630's fee_accrual.kotoba):
+;;   offset 0: sum-actual   (i32, sum of goal/goals-of :actual across an
+;;                           employee's open goals for the review period)
+;;   offset 4: sum-target   (i32, sum of the same goals' :target)
+;; Returns the MBO/OKR achievement band as an i32 code:
+;;   0 = 未達      (rate < 70%)
+;;   1 = 概ね達成  (70% <= rate < 100%)
+;;   2 = 達成      (rate >= 100%, including a zero-target no-goals input)
+;; sum-target <= 0 (no goals, or a malformed zero-target goal set) returns
+;; 0 -- matches talent.hrllm/draft-evaluation's own `(if (seq gs) ... 0.0)`
+;; fallback (no goals -> rate 0.0 -> band "未達"), not a crash.
+(defn main []
+  (achievement-band (mem-i32-at 0 0) (mem-i32-at 0 4)))
