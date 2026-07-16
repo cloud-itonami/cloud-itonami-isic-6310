@@ -164,6 +164,7 @@
            :vertical-align :top}
      "footer" {:margin-top 48 :padding-top 16 :border-top "1px solid var(--line)"
                :color "var(--muted)" :font-size 13.5}
+     "footer p.cta" {:font-size 15 :font-weight 600 :color "var(--fg)" :margin-bottom 14}
      "a" {:color "var(--accent)"}
      "code" {:background "var(--card)" :padding "1px 5px" :border-radius 4
              :font-size "0.9em"}}
@@ -280,6 +281,8 @@
      [:li "すべての commit / hold / 承認が追記専用の監査台帳に残る"]]
 
     [:footer
+     [:p.cta [:a {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310/issues/new?template=operator-interest.yml"}
+              "🡒 自社・自団体でこの人材基盤を運営したい方はこちら(operator-interest)"]]
      [:p "OSS (AGPL-3.0-or-later)。fork して自社の人材基盤として運営できます — "
       [:a {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/business-model.md"} "business model"]
       " · "

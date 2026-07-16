@@ -5,6 +5,7 @@
 .badge.hold { background: var(--hold-bg); color: var(--hold-fg); }
 input#q { flex: 1; font-size: 16px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); }
 td { border-bottom: 1px solid var(--line); padding: 7px 8px; vertical-align: top; }
+footer p.cta { font-size: 15px; font-weight: 600; color: var(--fg); margin-bottom: 14px; }
 body { font-family: system-ui,-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif; margin: 0 auto; max-width: 880px; padding: 28px 20px 48px; color: var(--fg); background: var(--bg); line-height: 1.55; }
 .badge.esc { background: var(--esc-bg); color: var(--esc-fg); }
 footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
@@ -146,6 +147,9 @@ e-100,田中 部長,:G5,営業</pre>
       <li>すべての commit / hold / 承認が追記専用の監査台帳に残る</li>
     </ul>
     <footer>
+      <p class="cta">
+        <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/issues/new?template=operator-interest.yml">🡒 自社・自団体でこの人材基盤を運営したい方はこちら(operator-interest)</a>
+      </p>
       <p>OSS (AGPL-3.0-or-later)。fork して自社の人材基盤として運営できます — <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/business-model.md">business model</a> · <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/operator-guide.md">operator guide</a> · 姉妹デモ: <a href="https://cloud-itonami.github.io/cloud-itonami-isic-6399/">Meta Job Search (isic-6399)</a>。このページは <code>web/generate.cljs</code> (nbb) が実 Store/PolicyGovernor を実行して生成し、検索は <code>search.cljs</code> (scittle = ブラウザ内 ClojureScript) が実行しています。</p>
     </footer>
     <script type="application/json" id="board-data">[{"id":"e-001","name":"佐藤 花子","grade":"G3","dept":"営業","manager":"田中 部長","goals":["新規受注 12 件 — 14/12 ✓","提案資料テンプレ整備 — 1/1 ✓"],"engagement":"engagement 4.2 / eNPS 30"},{"id":"e-002","name":"鈴木 太郎","grade":"G2","dept":"カスタマーサクセス","manager":"田中 部長","goals":["新規受注 8 件 — 5/8"],"engagement":"engagement 2.1 / eNPS -40"},{"id":"e-100","name":"田中 部長","grade":"G5","dept":"営業","manager":"—","goals":[],"engagement":"サーベイ未回答"}]</script>

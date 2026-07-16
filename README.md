@@ -28,6 +28,13 @@ interrupts, Datomic/in-mem checkpoints) — the same actor pattern as
 ## Live demo (GitHub Pages)
 
 **<https://cloud-itonami.github.io/cloud-itonami-isic-6310/>** -- a
+static demo. Want to run this for your own company or association?
+[**Register operator interest**](https://github.com/cloud-itonami/cloud-itonami-isic-6310/issues/new?template=operator-interest.yml)
+-- see [`docs/business-model.md`](docs/business-model.md) for the
+revenue model and [`docs/operator-quickstart.md`](docs/operator-quickstart.md)
+for the fork-to-published walkthrough.
+
+The demo above is a
 static, zero-build Talent Board over the demo org (synthetic data),
 plus a PolicyGovernor verdict table for the four kaonavi-equivalent
 operations. The board, the verdicts AND the audit
