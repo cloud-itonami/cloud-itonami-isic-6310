@@ -77,6 +77,15 @@ tenant, the data stays in the customer's own store (in-mem/Datomic/
 kotoba-server — the Store seam), and the policy logic is inspectable AGPL
 code. That is the switching pitch.
 
+**Subscribe (2026-07-16, ADR-2607161745)**: a live Stripe Payment Link for a ¥80,000/月 flat
+Managed Starter tier is available now — [**subscribe to Managed Talent Board — Starter**](https://buy.stripe.com/4gM00i1K3f4c4ikfQHbMQ0c)
+(sits within the existing Managed standard band above; no separate competitor research was run
+for this repo specifically — see `cloud-itonami-isic-6399`'s pricing-intelligence note for the
+sibling flagship's market-anchoring, which used the same ¥50k–150k/月 range). This is a no-code
+Stripe-hosted checkout; nothing in this repo's code changed. After subscribing, contact gftdcojp
+via an [operator-interest issue](https://github.com/cloud-itonami/cloud-itonami-isic-6310/issues/new?template=operator-interest.yml)
+to arrange managed-tenant setup (manual fulfillment today, no automated onboarding yet).
+
 ## Funnel (demo → fork → certified operator)
 
 1. **Demo** — the live GitHub Pages demo
