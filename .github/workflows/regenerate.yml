@@ -1,0 +1,63 @@
+# Nightly regeneration -- freshness automation mirroring cloud-itonami-isic-6399's
+# regenerate.yml (ADR-2607122300 flagship checklist item 4): rebuild docs/
+# through the real actor (web/generate.cljs runs the full OperationActor
+# StateGraph -- HR-LLM advisor -> PolicyGovernor -> phase gate -> approval --
+# for the six kaonavi-equivalent demo operations) and verify with the
+# headless harness, then commit only when the rendered board actually
+# changed. Unlike isic-6399, generate.cljs here always runs against a fixed
+# seed dataset (talent.store/seed-db) -- there is no operator postings.edn
+# override to branch on, so this workflow has no fork-vs-demo conditional.
+#
+# Fork note: this runs on the default GITHUB_TOKEN (contents: write).
+# If your org disables Actions, run the same commands from any scheduler
+# (see docs/operator-quickstart.md).
+name: regenerate-board
+on:
+  schedule:
+    - cron: '41 17 * * *'   # 02:41 JST nightly (off-minute, offset from isic-6399's 02:23 to avoid a shared-runner queue collision)
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: cloud-itonami/cloud-itonami-isic-6310
+      - uses: actions/checkout@v4
+        with: {repository: kotoba-lang/html, path: kotoba-lang/html}
+      - uses: actions/checkout@v4
+        with: {repository: kotoba-lang/css, path: kotoba-lang/css}
+      - uses: actions/checkout@v4
+        with: {repository: kotoba-lang/langchain, path: kotoba-lang/langchain}
+      - uses: actions/checkout@v4
+        with: {repository: kotoba-lang/langgraph, path: kotoba-lang/langgraph}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: install nbb
+        run: npm install nbb
+      - name: regenerate through the real actor
+        working-directory: cloud-itonami/cloud-itonami-isic-6310/web
+        # npx resolves the workspace-root node_modules regardless of the
+        # checkout depth (which differs from the monorepo layout here).
+        run: |
+          npx nbb \
+            --classpath "../src:../../../kotoba-lang/html/src:../../../kotoba-lang/css/src:../../../kotoba-lang/langchain/src:../../../kotoba-lang/langgraph/src" \
+            generate.cljs
+      - name: verify (headless harness)
+        working-directory: cloud-itonami/cloud-itonami-isic-6310/web
+        run: npx nbb verify_search.cljs
+      - name: commit when changed
+        working-directory: cloud-itonami/cloud-itonami-isic-6310
+        run: |
+          if ! git diff --quiet docs/; then
+            git config user.name "regenerate-board[bot]"
+            git config user.email "noreply@github.com"
+            git add docs/
+            git commit -m "chore(board): nightly regeneration through the actor (的確表示)"
+            git push
+          else
+            echo "board unchanged"
+          fi
