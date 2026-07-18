@@ -167,7 +167,18 @@
      "footer p.cta" {:font-size 15 :font-weight 600 :color "var(--fg)" :margin-bottom 14}
      "a" {:color "var(--accent)"}
      "code" {:background "var(--card)" :padding "1px 5px" :border-radius 4
-             :font-size "0.9em"}}
+             :font-size "0.9em"}
+     ".pitch" {:background "var(--card)" :border "1px solid var(--line)"
+               :border-radius 12 :padding "20px 22px" :margin-top 20}
+     ".pitch h2" {:margin-top 0 :border-top "none" :padding-top 0 :font-size 18}
+     ".pitch ul" {:margin "10px 0 0" :padding-left 20 :font-size 14.5}
+     ".pitch .ctarow" {:display :flex :gap 10 :flex-wrap :wrap :margin-top 18}
+     ".btn" {:display :inline-block :font-size 14 :font-weight 700
+             :padding "10px 18px" :border-radius 8 :text-decoration :none}
+     ".btn.primary" {:background "var(--accent)" :color "#ffffff"}
+     ".btn.secondary" {:background "transparent" :color "var(--fg)"
+                       :border "1.5px solid var(--line)"}
+     ".pitch .fine" {:color "var(--muted)" :font-size 12.5 :margin-top 10}}
     :media
     {"(prefers-color-scheme: dark)"
      {":root" {:--fg "#e6edf3" :--bg "#0d1117" :--muted "#8d96a0"
@@ -206,9 +217,9 @@
    [:head
     [:meta {:charset "utf-8"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
-    [:title "Talent Board — governed HR (cloud-itonami-isic-6310)"]
+    [:title "kaonavi代替 — 人材データを人質に取らない、月額固定¥80,000 | Talent Board (cloud-itonami-isic-6310)"]
     [:meta {:name "description"
-            :content "kaonavi 等 HR SaaS のオープンソース置き換えデモ。人材データはあなたの手元、HR-LLM の全操作は独立 PolicyGovernor（RBAC・目的制限・公正性・最小開示）が検閲。"}]
+            :content "kaonavi等HR SaaSのオープンソース置き換え。1人あたり課金でずっと払い続け、データはベンダーの中 — このボードはテナント単位の定額¥80,000/月、データはあなたのストアに残る。HR-LLMの全操作を独立PolicyGovernorが検閲。"}]
     stylesheet]
    [:body
     [:header
@@ -217,6 +228,28 @@
       "HR-LLM の全操作を独立 PolicyGovernor が検閲する。 "
       [:a {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310"} "cloud-itonami-isic-6310"]
       " のライブデモ(合成データ)。"]]
+
+    [:div.pitch
+     [:h2 "人材データ、いつまでベンダーに預けますか?"]
+     [:p "多くの HR SaaS は" [:strong "従業員1人あたり月額課金・永続契約"]
+      "で、データはベンダーのシステムの中にあります。このボードは"
+      [:strong " テナント単位の定額 ¥80,000/月"] "。データはあなた自身のストア"
+      "(in-memory / Datomic / kotoba-server から選択可)に残り、ポリシーロジックは"
+      "AGPL で検査可能なコードそのものです — 乗り換えのたびにベンダーロックインを"
+      "心配する必要がありません。"]
+     [:ul
+      [:li "従業員規模が増えても課金は変わらない(テナント単位、シート単位ではない)"]
+      [:li "HR-LLM の RBAC・目的制限・公正性・最小開示は独立 PolicyGovernor が検閲 — 人間の承認でも覆せない"]
+      [:li "自前運用(セルフホスト)も可能 — ソースは AGPL 公開、ベンダー都合の仕様変更に振り回されない"]]
+     [:div.ctarow
+      [:a.btn.primary {:href "https://buy.stripe.com/4gM00i1K3f4c4ikfQHbMQ0c"}
+       "🡒 Managed Talent Board を購読(¥80,000/月)"]
+      [:a.btn.secondary {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310/issues/new?template=operator-interest.yml"}
+       "自前運用(セルフホスト)に興味がある"]]
+     [:p.fine "この価格帯は姉妹 flagship(cloud-itonami-isic-6399/7810)の実競合調査(2026-07-16)と"
+      "同じ ¥50k–150k/月 レンジ内 — 6310 単独の競合調査はまだ実施していません(正直な現状、"
+      [:a {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/business-model.md"} "business model"]
+      " 参照)。下の技術デモは合成データによる実 actor 実行結果、この価格帯とは独立して生成されています。"]]
 
     [:div.search
      [:input {:id "q" :type "search" :placeholder "氏名・部署で検索…" :autocomplete "off"}]

@@ -1,125 +1,147 @@
 <!doctype html>
-<html lang="en">
-  <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Governed Talent Platform — Cloud-Itonami ISIC 6310</title><meta name="description" content="HR records shouldn't be held hostage by SaaS. An open-source, self-hosted alternative with an independent Governor that audits every AI decision — no magic, just control."><style>table { border-collapse: collapse; width: 100%; margin-top: 12px; font-size: 13.5px; }
+<html lang="ja">
+  <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>kaonavi代替 — 人材データを人質に取らない、月額固定¥80,000 | Talent Board (cloud-itonami-isic-6310)</title><meta name="description" content="kaonavi等HR SaaSのオープンソース置き換え。1人あたり課金でずっと払い続け、データはベンダーの中 — このボードはテナント単位の定額¥80,000/月、データはあなたのストアに残る。HR-LLMの全操作を独立PolicyGovernorが検閲。"><style>table { border-collapse: collapse; width: 100%; margin-top: 12px; font-size: 13.5px; }
 :root { --bg: #ffffff; --line: #d0d7de; --muted: #57606a; --accent: #0b5cad; --hold-bg: #ffebe9; --esc-fg: #7d4e00; --ok-fg: #116329; --esc-bg: #fff8c5; --card: #f6f8fa; --ok-bg: #dafbe1; --fg: #1b1f24; --hold-fg: #a40e26; }
 .badge.hold { background: var(--hold-bg); color: var(--hold-fg); }
 input#q { flex: 1; font-size: 16px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); }
 td { border-bottom: 1px solid var(--line); padding: 7px 8px; vertical-align: top; }
 footer p.cta { font-size: 15px; font-weight: 600; color: var(--fg); margin-bottom: 14px; }
-body { font-family: system-ui,-apple-system,sans-serif; margin: 0 auto; max-width: 880px; padding: 28px 20px 48px; color: var(--fg); background: var(--bg); line-height: 1.55; }
+body { font-family: system-ui,-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif; margin: 0 auto; max-width: 880px; padding: 28px 20px 48px; color: var(--fg); background: var(--bg); line-height: 1.55; }
+.btn.secondary { background: transparent; color: var(--fg); border: 1.5px solid var(--line); }
 .badge.esc { background: var(--esc-bg); color: var(--esc-fg); }
+.pitch { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin-top: 20px; }
 footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
 h2 { font-size: 17px; margin-top: 40px; border-top: 1px solid var(--line); padding-top: 24px; }
 .card .meta { color: var(--muted); font-size: 13.5px; }
 .chip { display: inline-block; font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 20px; padding: 1px 9px; margin-right: 6px; }
 #board { display: grid; grid-template-columns: repeat(auto-fill,minmax(250px,1fr)); gap: 12px; margin-top: 12px; }
 .search { display: flex; gap: 8px; margin-top: 20px; }
+.btn { display: inline-block; font-size: 14px; font-weight: 700; padding: 10px 18px; border-radius: 8px; text-decoration: none; }
+.pitch .fine { color: var(--muted); font-size: 12.5px; margin-top: 10px; }
 select#dept { font-size: 15px; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); }
 a { color: var(--accent); }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
 header p.sub { color: var(--muted); margin-top: 4px; }
+.btn.primary { background: var(--accent); color: #ffffff; }
 #empty { color: var(--muted); margin-top: 16px; }
 .card ul { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; }
+.pitch ul { margin: 10px 0 0; padding-left: 20px; font-size: 14.5px; }
 .badge.ok { background: var(--ok-bg); color: var(--ok-fg); }
 .card h3 { margin: 0 0 2px; font-size: 16px; }
+.pitch .ctarow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
 .badge { display: inline-block; font-size: 12px; font-weight: 600; border-radius: 20px; padding: 2px 10px; margin-left: 8px; vertical-align: 1px; }
 h1 { font-size: 24px; margin: 0; }
+.pitch h2 { margin-top: 0; border-top: none; padding-top: 0; font-size: 18px; }
 th { text-align: left; color: var(--muted); font-weight: 600; border-bottom: 1.5px solid var(--line); padding: 6px 8px; }
 code { background: var(--card); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
 @media (prefers-color-scheme: dark) { :root { --bg: #0d1117; --line: #30363d; --muted: #8d96a0; --accent: #58a6ff; --hold-bg: #2d1215; --esc-fg: #d29922; --ok-fg: #3fb950; --esc-bg: #2b2411; --card: #161b22; --ok-bg: #12261e; --fg: #e6edf3; --hold-fg: #f85149; } }</style></head>
   <body>
     <header>
-      <h1>Governed Talent Platform <span class="badge ok">owned</span></h1>
-      <p class="sub">Stop HR data from being held hostage by SaaS. This is a self-hosted, open-source platform where every AI decision is audited by an independent PolicyGovernor—not magic, just verifiable control. Live demo with synthetic data. <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310">Fork it for your organization.</a></p>
+      <h1>Talent Board <span class="badge ok">governed</span></h1>
+      <p class="sub">人材データベース — HR SaaS (kaonavi 等) の OSS 置き換え。人材データを SaaS に人質に取られず、HR-LLM の全操作を独立 PolicyGovernor が検閲する。 <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310">cloud-itonami-isic-6310</a> のライブデモ(合成データ)。</p>
     </header>
-    <div class="search"><input id="q" type="search" placeholder="Search by name or department…" autocomplete="off"><select id="dept">
-      <option value="">All departments</option>
-      <option value="Engineering">Engineering</option>
-      <option value="Sales">Sales</option>
+    <div class="pitch">
+      <h2>人材データ、いつまでベンダーに預けますか?</h2>
+      <p>多くの HR SaaS は<strong>従業員1人あたり月額課金・永続契約</strong>で、データはベンダーのシステムの中にあります。このボードは<strong> テナント単位の定額 ¥80,000/月</strong>。データはあなた自身のストア(in-memory / Datomic / kotoba-server から選択可)に残り、ポリシーロジックはAGPL で検査可能なコードそのものです — 乗り換えのたびにベンダーロックインを心配する必要がありません。</p>
+      <ul>
+        <li>従業員規模が増えても課金は変わらない(テナント単位、シート単位ではない)</li>
+        <li>HR-LLM の RBAC・目的制限・公正性・最小開示は独立 PolicyGovernor が検閲 — 人間の承認でも覆せない</li>
+        <li>自前運用(セルフホスト)も可能 — ソースは AGPL 公開、ベンダー都合の仕様変更に振り回されない</li>
+      </ul>
+      <div class="ctarow">
+        <a class="btn primary" href="https://buy.stripe.com/4gM00i1K3f4c4ikfQHbMQ0c">🡒 Managed Talent Board を購読(¥80,000/月)</a>
+        <a class="btn secondary" href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/issues/new?template=operator-interest.yml">自前運用(セルフホスト)に興味がある</a>
+      </div>
+      <p class="fine">この価格帯は姉妹 flagship(cloud-itonami-isic-6399/7810)の実競合調査(2026-07-16)と同じ ¥50k–150k/月 レンジ内 — 6310 単独の競合調査はまだ実施していません(正直な現状、<a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/business-model.md">business model</a> 参照)。下の技術デモは合成データによる実 actor 実行結果、この価格帯とは独立して生成されています。</p>
+    </div>
+    <div class="search"><input id="q" type="search" placeholder="氏名・部署で検索…" autocomplete="off"><select id="dept">
+      <option value="">全部署</option>
+      <option value="カスタマーサクセス">カスタマーサクセス</option>
+      <option value="営業">営業</option>
     </select></div>
     <div id="board"></div>
-    <p id="empty" hidden>No employees found.</p>
+    <p id="empty" hidden>該当する社員はいません。</p>
     <p>
-      <span class="meta">Protected attributes (age, gender, nationality, health, marital status, pregnancy) never appear on this board. They are structurally excluded from decision rationale and reports by the PolicyGovernor.</span>
+      <span class="meta">カードに年齢・性別・国籍・健康情報が無いのは仕様です — 保護属性は <code>talent.policy/protected-attrs</code> として評価根拠・帳票開示の両方から HARD ガードされています。</span>
     </p>
-    <h2>PolicyGovernor — How Every HR Decision Is Audited</h2>
-    <p>Unlike typical HR SaaS, the HR-LLM here is sealed and has no direct commit authority. An independent <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/src/talent/policy.cljc">PolicyGovernor</a> gates all operations with role-based access control, purpose limits, fairness checks, and minimal disclosure rules. Hard violations cannot be overridden—even by humans. The table below shows actual results from running the OperationActor four times: HR-LLM proposes → PolicyGovernor reviews → phase gate → human approval (if needed) → commit or hold.</p>
+    <h2>PolicyGovernor — HR-LLM の operation がどう検閲されるか</h2>
+    <p>kaonavi 型 SaaS との違いはここです: HR-LLM(advisor) は提案しか返せず、コミット権は独立した <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/src/talent/policy.cljc">PolicyGovernor</a> が握ります(HARD violation は人間の承認でも覆せません)。下表はこのページの生成時に実際の OperationActor(StateGraph)を4回実行した結果です — HR-LLM 提案 → PolicyGovernor → phase gate → (必要なら)承認 interrupt → commit/hold。</p>
     <table>
       <thead>
         <tr>
           <th>operation</th>
-          <th>verdict</th>
-          <th>reason</th>
+          <th>判定</th>
+          <th>根拠</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>op1 Employee DB upsert (department update by HRBP)</td>
+          <td>op1 従業員DB upsert（HRBP が部署を更新・正当）</td>
           <td>
             <span class="badge ok">auto-commit</span>
           </td>
-          <td>No violations / confidence 0.97</td>
+          <td>violation なし / confidence 0.97</td>
         </tr>
         <tr>
-          <td>op2 Evaluation draft cites gender and marital status as decision basis</td>
+          <td>op2 評価ドラフトが性別・婚姻を判断根拠に引用</td>
           <td>
             <span class="badge hold">HOLD</span>
           </td>
           <td>
             <span>
-              <span><span class="badge hold">fairness</span> Protected attributes used as basis: [:gender :marital]<br></span>
+              <span><span class="badge hold">fairness</span> 保護属性を判断根拠に使用: [:gender :marital]<br></span>
             </span>
           </td>
         </tr>
         <tr>
-          <td>op3 Report export (purpose=headcount but requests health, age, gender columns)</td>
+          <td>op3 帳票 export（目的=headcount なのに病歴・年齢・性別の列を要求）</td>
           <td>
             <span class="badge hold">HOLD</span>
           </td>
           <td>
             <span>
-              <span><span class="badge hold">minimal-disclosure</span> Exceeds columns permitted for purpose :headcount: [:age :health :gender]<br></span>
+              <span><span class="badge hold">minimal-disclosure</span> 目的 :headcount に対し過剰な列: [:age :health :gender]<br></span>
             </span>
           </td>
         </tr>
         <tr>
-          <td>op4 Survey analysis (high attrition risk detected, confidence low)</td>
+          <td>op4 サーベイ分析（e-002 離職リスク high・重大かつ低確信）</td>
           <td>
-            <span><span class="badge esc">escalate → human approval</span> <span class="badge ok">approved → commit</span></span>
+            <span><span class="badge esc">escalate → 人間承認</span> <span class="badge ok">可決 → commit</span></span>
           </td>
-          <td>No violations / confidence 0.55</td>
+          <td>violation なし / confidence 0.55</td>
         </tr>
         <tr>
-          <td>op5 Assignment retention strategy (based on high-risk finding from op4)</td>
+          <td>op5 配置転換 — op4 の高リスク所見を受けたリテンション施策（e-002、根拠はサーベイ業務シグナルのみ）</td>
           <td>
-            <span><span class="badge esc">escalate → human approval</span> <span class="badge ok">approved → commit</span></span>
+            <span><span class="badge esc">escalate → 人間承認</span> <span class="badge ok">可決 → commit</span></span>
           </td>
-          <td>No violations / confidence 0.8</td>
+          <td>violation なし / confidence 0.8</td>
         </tr>
         <tr>
-          <td>op5b Assignment cites age and medical visits as decision basis</td>
+          <td>op5b 配置転換が年齢・通院を判断根拠に引用</td>
           <td>
             <span class="badge hold">HOLD</span>
           </td>
           <td>
             <span>
-              <span><span class="badge hold">fairness</span> Protected attributes used as basis: [:age :health]<br></span>
+              <span><span class="badge hold">fairness</span> 保護属性を判断根拠に使用: [:age :health]<br></span>
             </span>
           </td>
         </tr>
         <tr>
-          <td>op6 Decision rationale mentions gender (LLM failure mode)</td>
+          <td>op6 check 7: cites はクリーン、rationale に「女性で…」（実LLMの失敗様式） — 人間が却下</td>
           <td>
-            <span><span class="badge esc">escalate → human review</span> <span class="badge hold">rejected → HOLD</span></span>
+            <span><span class="badge esc">escalate → 人間レビュー</span> <span class="badge hold">却下 → HOLD</span></span>
           </td>
           <td>
-            <span><span class="badge esc">rationale-suspect</span> Protected attribute keywords detected (soft check escalates; human rejected)</span>
+            <span><span class="badge esc">rationale-suspect</span> 保護属性語を rationale に検出(SOFT — 抑圧でなく人間レビューに回し、人間が却下した)</span>
           </td>
         </tr>
       </tbody>
     </table>
-    <h2>Immutable Audit Ledger — Proof of Every Decision</h2>
-    <p>Unlike SaaS, you get an append-only ledger. The records below are actual facts written by the OperationActor during page generation—not hand-coded. This is the evidence trail you control.</p>
+    <h2>監査台帳 — 上の4実行が実際に書いた追記専用レコード</h2>
+    <p>SaaS では得られない不変の証跡。以下はハードコードではなく、ページ生成時の実 actor 実行が <code>talent.store</code> の台帳に書いた事実そのものです。</p>
     <pre>commit · op=:employee/upsert · actor=e-900 · subject=e-002 · basis=[:id :dept]
 hold · op=:evaluation/draft · actor=e-900 · subject=e-001 · basis=[:fairness]
 hold · op=:report/export · actor=e-900 · subject=* · basis=[:minimal-disclosure]
@@ -127,27 +149,32 @@ commit · op=:survey/analyze · actor=e-900 · subject=e-002 · basis=[:engageme
 commit · op=:assignment/propose · actor=e-900 · subject=e-002 · basis=[:goals :dept :engagement :enps]
 hold · op=:assignment/propose · actor=e-900 · subject=e-001 · basis=[:fairness]
 hold · op=:evaluation/draft · actor=e-900 · subject=e-001 · basis=[:approver-rejected]</pre>
-    <h2>What This Guarantees</h2>
+    <h2>組織図 — ReportActor が実行後 Store から生成(kaonavi 組織図)</h2>
+    <p>manager リンクからの純関数レンダリング。op5 のリテンション配置転換が反映済みです。</p>
+    <pre>└ 田中 部長 (G5 / 営業)
+  └ 佐藤 花子 (G3 / 営業)
+  └ 鈴木 太郎 (G2 / カスタマーサクセス)</pre>
+    <h2>帳票 — 最小開示ゲートを通った CSV の実物</h2>
+    <p>op3 の過剰開示(病歴・年齢・性別)は HOLD になりました。これは同じ :headcount 目的で最小開示ゲートが許す列だけを実際にレンダリングした帳票です — 保護属性の列はポリシー上ここに現れることができません(<code>talent.policy/purpose-columns</code>)。</p>
+    <pre>id,name,grade,dept
+e-001,佐藤 花子,:G3,営業
+e-002,鈴木 太郎,:G2,カスタマーサクセス
+e-100,田中 部長,:G5,営業</pre>
+    <h2>この人材ボードが保証すること</h2>
     <ul>
-      <li>Protected attributes (age, gender, nationality, health, marital, pregnancy) never ground an evaluation or appear in a report</li>
-      <li>Reports disclose only the columns your stated purpose permits</li>
-      <li>Role-based access rules cannot be bypassed by the LLM</li>
-      <li>High-stakes changes always require human approval</li>
-      <li>Every commit, hold, and approval is logged immutably</li>
+      <li>保護属性(年齢・性別・国籍・信条・健康・婚姻・妊娠)は評価根拠にならない(<strong>公正性ゲート</strong>)</li>
+      <li>帳票は宣言した目的に許された列しか出ない(<strong>最小開示ゲート</strong>)</li>
+      <li>role × 操作 × 対象関係の RBAC を LLM が迂回できない</li>
+      <li>等級変更・退職勧奨など高影響の操作は必ず人間の承認を経る</li>
+      <li>すべての commit / hold / 承認が追記専用の監査台帳に残る</li>
     </ul>
     <footer>
       <p class="cta">
-        <a href="https://itonami.cloud/isco-1212/">➜ Claim a free tenant or explore paid deployment</a>
+        <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/issues/new?template=operator-interest.yml">🡒 自社・自団体でこの人材基盤を運営したい方はこちら(operator-interest)</a>
       </p>
-      <p class="cta">
-        <a href="https://itonami.cloud/docs/go-live.md">➜ Go-live guide for production deployment</a>
-      </p>
-      <p class="cta">
-        <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310">➜ Fork the source code on GitHub</a>
-      </p>
-      <p>Open source (AGPL-3.0-or-later). This platform replaces HR SaaS with a governed, audited alternative you control. The demo board runs the full OperationActor StateGraph at build time; in-browser search runs live via ClojureScript. See <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/business-model.md">business model</a> and <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/operator-guide.md">operator guide</a> for deployment and business details. Related: <a href="https://cloud-itonami.github.io/cloud-itonami-isic-6399/">Meta Job Search (ISIC 6399)</a>.</p>
+      <p>OSS (AGPL-3.0-or-later)。fork して自社の人材基盤として運営できます — <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/business-model.md">business model</a> · <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/operator-guide.md">operator guide</a> · 姉妹デモ: <a href="https://cloud-itonami.github.io/cloud-itonami-isic-6399/">Meta Job Search (isic-6399)</a>。このページは <code>web/generate.cljs</code> (nbb) が実 Store/PolicyGovernor を実行して生成し、検索は <code>search.cljs</code> (scittle = ブラウザ内 ClojureScript) が実行しています。</p>
     </footer>
-    <script type="application/json" id="board-data">[{"id":"e-001","name":"Alice Chen","grade":"L3","dept":"Sales","manager":"Maria Santos","goals":["Secure 12 new enterprise deals — 14/12 ✓","Finalize proposal template — 1/1 ✓"],"engagement":"engagement 4.2 / eNPS 30"},{"id":"e-002","name":"Bob Kumar","grade":"L2","dept":"Engineering","manager":"Maria Santos","goals":["Deliver feature X — 5/8 in progress"],"engagement":"engagement 2.1 / eNPS -40"},{"id":"e-100","name":"Maria Santos","grade":"L5","dept":"Sales","manager":"—","goals":[],"engagement":"Survey pending"}]</script>
+    <script type="application/json" id="board-data">[{"id":"e-001","name":"佐藤 花子","grade":"G3","dept":"営業","manager":"田中 部長","goals":["新規受注 12 件 — 14/12 ✓","提案資料テンプレ整備 — 1/1 ✓"],"engagement":"engagement 4.2 / eNPS 30"},{"id":"e-002","name":"鈴木 太郎","grade":"G2","dept":"カスタマーサクセス","manager":"田中 部長","goals":["新規受注 8 件 — 5/8"],"engagement":"engagement 2.1 / eNPS -40"},{"id":"e-100","name":"田中 部長","grade":"G5","dept":"営業","manager":"—","goals":[],"engagement":"サーベイ未回答"}]</script>
     <script src="https://cdn.jsdelivr.net/npm/scittle@0.6.22/dist/scittle.js"></script>
     <script type="application/x-scittle" src="search.cljs"></script>
   </body>
