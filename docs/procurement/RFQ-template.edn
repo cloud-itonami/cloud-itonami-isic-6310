@@ -1,0 +1,19 @@
+{:rfq/id "RFQ-YYYY-NNN"
+ :buyer/legal-name ""
+ :buyer/contact {:name "" :email "" :phone ""}
+ :delivery/location ""
+ :workload/profile :training-or-inference
+ :capacity/gpu-count 0
+ :capacity/target-start-on "YYYY-MM-DD"
+ :power/max-kw 0
+ :network/required ""
+ :security/required ""
+ :response/due-on "YYYY-MM-DD"
+ :commercial/ask [:currency :tax :hardware-price :freight :installation
+                  :support :warranty :lead-time :payment-terms]
+ :technical/ask [:manufacturer :model :gpu-model :gpu-memory :cpu :ram
+                 :storage :network :rack-units :power-peak-kw :cooling
+                 :certifications :firmware-support]
+ :attachments []
+ :status :draft
+ :approval-required-before-send true}
