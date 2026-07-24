@@ -1,0 +1,60 @@
+[{:jurisdiction/id :USA
+  :jurisdiction/name "United States"
+  :jurisdiction/currency "USD"
+  :jurisdiction/notes ["EAR classification, destination, end-user and end-use review required"
+                       "OFAC screening required"
+                       "privacy and facility permits require state/local analysis"]
+  :jurisdiction/sources
+  [{:authority "U.S. Bureau of Industry and Security" :topic :export-controls
+    :url "https://www.bis.gov/regulations/ear"}
+   {:authority "U.S. Department of the Treasury OFAC" :topic :sanctions
+    :url "https://ofac.treasury.gov/sanctions-programs-and-country-information"}]}
+ {:jurisdiction/id :CHN
+  :jurisdiction/name "People's Republic of China (mainland)"
+  :jurisdiction/currency "CNY"
+  :jurisdiction/notes ["PIPL/data localisation and cross-border transfer path requires PRC counsel"
+                       "MLPS/cybersecurity scope and ICP applicability require local determination"
+                       "import/export and advanced-computing restrictions require route-specific review"]
+  :jurisdiction/sources
+  [{:authority "Cyberspace Administration of China" :topic :cross-border-data
+    :url "https://www.cac.gov.cn/"}
+   {:authority "National People's Congress" :topic :personal-information
+    :url "http://www.npc.gov.cn/"}
+   {:authority "Ministry of Industry and Information Technology" :topic :icp-telecom
+    :url "https://www.miit.gov.cn/"}]}
+ {:jurisdiction/id :HKG
+  :jurisdiction/name "Hong Kong SAR"
+  :jurisdiction/currency "HKD"
+  :jurisdiction/notes ["Hong Kong is a separate jurisdiction pack from mainland China"
+                       "PDPO and cross-border contractual controls require review"]
+  :jurisdiction/sources
+  [{:authority "Privacy Commissioner for Personal Data" :topic :pdpo
+    :url "https://www.pcpd.org.hk/english/data_privacy_law/ordinance_at_a_Glance/ordinance.html"}
+   {:authority "Hong Kong Customs and Excise Department" :topic :import-export
+    :url "https://www.customs.gov.hk/"}]}
+ {:jurisdiction/id :EU
+  :jurisdiction/name "European Union (Member State required)"
+  :jurisdiction/currency "EUR"
+  :jurisdiction/notes ["Member State must be selected for company, tax, construction, energy and facility rules"
+                       "GDPR transfer mechanism and processor terms require review"
+                       "NIS2 scope and national transposition require operator-specific review"
+                       "CE/RoHS/WEEE and data-centre energy reporting applicability require evidence"]
+  :jurisdiction/sources
+  [{:authority "European Union" :topic :gdpr
+    :url "https://eur-lex.europa.eu/eli/reg/2016/679/oj"}
+   {:authority "European Union" :topic :nis2
+    :url "https://eur-lex.europa.eu/eli/dir/2022/2555/oj"}
+   {:authority "European Commission" :topic :data-centre-energy
+    :url "https://energy.ec.europa.eu/topics/energy-efficiency/energy-efficiency-targets-directive-and-rules/data-centres-and-energy_en"}
+   {:authority "European Commission" :topic :product-compliance
+    :url "https://single-market-economy.ec.europa.eu/single-market/ce-marking_en"}]}
+ {:jurisdiction/id :JPN
+  :jurisdiction/name "Japan"
+  :jurisdiction/currency "JPY"
+  :jurisdiction/notes ["tax treatment requires transaction-specific tax adviser memo"
+                       "facility, electrical, fire and data-transfer review required"]
+  :jurisdiction/sources
+  [{:authority "Personal Information Protection Commission" :topic :privacy
+    :url "https://www.ppc.go.jp/en/"}
+   {:authority "Ministry of Economy, Trade and Industry" :topic :trade-control
+    :url "https://www.meti.go.jp/policy/anpo/englishpage.html"}]}]
