@@ -5,6 +5,32 @@ data processing, hosting and related activities. This repository publishes the
 HR/talent-management SaaS replacement as an OSS business that any qualified
 operator can fork, deploy, run, improve and sell.
 
+It also contains an **AI data-center business lane** for GPU asset acquisition,
+external tax/compliance evidence, installation, commissioning, compute-service
+operation and realised-period settlement. See
+[`docs/adr/0003-ai-datacenter-business-lane.md`](docs/adr/0003-ai-datacenter-business-lane.md)
+and `src/ai_datacenter/business.cljc`. It records—but never self-certifies—tax
+eligibility or engineering acceptance, and it encodes no guaranteed return.
+
+The procurement implementation, public-source vendor seed, RFQ template,
+negotiation contract pack and production-readiness checklist are under
+`src/ai_datacenter/procurement.cljc`, `data/ai-datacenter/` and
+`docs/{procurement,contracts}`. Vendor inquiries are generated as approval-
+required drafts; this repository never silently sends or accepts one.
+
+International supply-chain gates cover JPN, USA, mainland China, Hong Kong SAR
+and EU deployments (with a mandatory Member State). See
+[`docs/international/`](docs/international/) for authoritative-source routing,
+the executable evidence gate and the transaction gaps that still require real
+vendors, facilities and professional reviewers.
+
+The detailed operating implementation is in `src/ai_datacenter/{schema,
+evidence,store,governor,actor,compute,commerce,integrations}.cljc`. Architecture,
+tenant API and cross-repo effect contracts are documented in
+[`docs/ai-datacenter-architecture.md`](docs/ai-datacenter-architecture.md),
+[`docs/api/ai-datacenter-api.md`](docs/api/ai-datacenter-api.md) and
+[`docs/integrations/cloud-itonami-effects.md`](docs/integrations/cloud-itonami-effects.md).
+
 Former name: `gftd-talent-actor`.
 
 A talent-management **actor design** — the OSS replacement for a HR SaaS

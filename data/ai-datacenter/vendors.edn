@@ -1,0 +1,177 @@
+;; Public-source discovery records, not endorsements or live quotations.
+;; Price, stock, lead time, warranty and Japan delivery must be confirmed by RFQ.
+[{:vendor/id "eole-ai-datacenter"
+  :vendor/legal-name "株式会社イオレ"
+  :vendor/country "JPN"
+  :vendor/regions #{"JPN"}
+  :vendor/role #{:business-operator :gpu-server-sales-support :operations-coordination}
+  :vendor/offering "GPUサーバーを用いたAIデータセンター事業への参入支援"
+  :vendor/source-url "https://ai-data-center.eole.co.jp/"
+  :vendor/contact-url "https://ai-data-center.eole.co.jp/#contact"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page}
+ {:vendor/id "nvidia-dgx"
+  :vendor/legal-name "NVIDIA Corporation"
+  :vendor/country "USA"
+  :vendor/regions #{"JPN" "USA" "EU" "CHN" "HKG"}
+  :vendor/role #{:gpu-platform-manufacturer}
+  :vendor/offering "NVIDIA DGX platform"
+  :vendor/source-url "https://www.nvidia.com/ja-jp/data-center/dgx-platform/"
+  :vendor/contact-url "https://www.nvidia.com/ja-jp/contact/"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page}
+ {:vendor/id "dell-technologies"
+  :vendor/legal-name "Dell Technologies Inc."
+  :vendor/country "USA"
+  :vendor/regions #{"JPN" "USA" "EU" "CHN" "HKG"}
+  :vendor/role #{:server-manufacturer :systems-vendor}
+  :vendor/offering "PowerEdge accelerated-compute servers"
+  :vendor/source-url "https://www.dell.com/ja-jp/shop/servers-storage-and-networking/sf/poweredge-servers"
+  :vendor/contact-url "https://www.dell.com/ja-jp/lp/contact-us"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :url-needs-refresh}
+ {:vendor/id "hpe"
+  :vendor/legal-name "Hewlett Packard Enterprise Company"
+  :vendor/country "USA"
+  :vendor/regions #{"JPN" "USA" "EU" "CHN" "HKG"}
+  :vendor/role #{:server-manufacturer :systems-vendor}
+  :vendor/offering "HPE accelerated computing and GPU systems"
+  :vendor/source-url "https://www.hpe.com/jp/ja/compute.html"
+  :vendor/contact-url "https://www.hpe.com/jp/ja/contact-hpe.html"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :url-needs-refresh}
+ {:vendor/id "lenovo"
+  :vendor/legal-name "Lenovo Group Limited"
+  :vendor/country "HKG"
+  :vendor/regions #{"JPN" "USA" "EU" "CHN" "HKG"}
+  :vendor/role #{:server-manufacturer :systems-vendor}
+  :vendor/offering "ThinkSystem servers and AI infrastructure"
+  :vendor/source-url "https://www.lenovo.com/jp/ja/servers-storage/servers/"
+  :vendor/contact-url "https://www.lenovo.com/jp/ja/contact/"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :url-needs-refresh}
+ {:vendor/id "supermicro"
+  :vendor/legal-name "Super Micro Computer, Inc."
+  :vendor/country "USA"
+  :vendor/regions #{"JPN" "USA" "EU" "CHN" "HKG"}
+  :vendor/role #{:server-manufacturer :systems-vendor}
+  :vendor/offering "GPU systems"
+  :vendor/source-url "https://www.supermicro.com/ja/solutions/gpu"
+  :vendor/contact-url "https://www.supermicro.com/ja/about/contact"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page}
+ {:vendor/id "gdep-advance"
+  :vendor/legal-name "GDEP Advance, Inc."
+  :vendor/country "JPN"
+  :vendor/regions #{"JPN"}
+  :vendor/role #{:gpu-systems-vendor :solution-integrator}
+  :vendor/offering "GPU computing systems and related integration"
+  :vendor/source-url "https://www.gdep.co.jp/"
+  :vendor/contact-url "https://www.gdep.co.jp/contact/"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page}
+ {:vendor/id "hpc-systems-japan"
+  :vendor/legal-name "HPC SYSTEMS Inc."
+  :vendor/country "JPN"
+  :vendor/regions #{"JPN"}
+  :vendor/role #{:hpc-systems-vendor :solution-integrator}
+  :vendor/offering "HPC and GPU computing systems"
+  :vendor/source-url "https://www.hpc.co.jp/"
+  :vendor/contact-url "https://www.hpc.co.jp/contact/"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page}
+ {:vendor/id "macnica-nvidia"
+  :vendor/legal-name "Macnica, Inc."
+  :vendor/country "JPN"
+  :vendor/regions #{"JPN"}
+  :vendor/role #{:technology-distributor :solution-integrator}
+  :vendor/offering "NVIDIA products and technical support"
+  :vendor/source-url "https://www.macnica.co.jp/business/semiconductor/manufacturers/nvidia/"
+  :vendor/contact-url "https://www.macnica.co.jp/business/semiconductor/contact/"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page}
+ {:vendor/id "penguin-solutions"
+  :vendor/legal-name "Penguin Solutions, Inc."
+  :vendor/country "USA"
+  :vendor/regions #{"USA" "EU"}
+  :vendor/role #{:hpc-systems-vendor :cluster-integrator}
+  :vendor/offering "AI and HPC computing infrastructure"
+  :vendor/source-url "https://www.penguinsolutions.com/computing"
+  :vendor/contact-url "https://www.penguinsolutions.com/contact-us"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page}
+ {:vendor/id "qct"
+  :vendor/legal-name "Quanta Cloud Technology Inc."
+  :vendor/country "TWN"
+  :vendor/regions #{"USA" "EU" "CHN" "HKG"}
+  :vendor/role #{:server-manufacturer :systems-vendor}
+  :vendor/offering "Rackmount GPU servers"
+  :vendor/source-url "https://www.qct.io/product/index/Server/rackmount-server/GPU-Server"
+  :vendor/contact-url "https://www.qct.io/ContactUs"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page}
+ {:vendor/id "asus-servers"
+  :vendor/legal-name "ASUSTeK Computer Inc."
+  :vendor/country "TWN"
+  :vendor/regions #{"JPN" "USA" "EU" "CHN" "HKG"}
+  :vendor/role #{:server-manufacturer :systems-vendor}
+  :vendor/offering "GPU servers"
+  :vendor/source-url "https://servers.asus.com/products/Servers/GPU-Servers"
+  :vendor/contact-url "https://servers.asus.com/support/"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page}
+ {:vendor/id "huawei-ascend"
+  :vendor/legal-name "Huawei Technologies Co., Ltd."
+  :vendor/country "CHN"
+  :vendor/regions #{"CHN" "HKG"}
+  :vendor/role #{:accelerator-manufacturer :systems-vendor}
+  :vendor/offering "Ascend computing products"
+  :vendor/source-url "https://e.huawei.com/en/products/computing/ascend"
+  :vendor/contact-url "https://e.huawei.com/en/contact-us"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page
+  :vendor/restriction-note "Route-specific export, sanctions and procurement-policy review required"}
+ {:vendor/id "h3c-servers"
+  :vendor/legal-name "New H3C Technologies Co., Ltd."
+  :vendor/country "CHN"
+  :vendor/regions #{"CHN" "HKG"}
+  :vendor/role #{:server-manufacturer :systems-vendor}
+  :vendor/offering "Enterprise servers"
+  :vendor/source-url "https://www.h3c.com/en/Products_and_Solutions/InterConnect/Servers/"
+  :vendor/contact-url "https://www.h3c.com/en/Contact_Us/"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page
+  :vendor/restriction-note "Exact GPU configuration and route-specific trade review required"}
+ {:vendor/id "jardine-onesolution"
+  :vendor/legal-name "Jardine OneSolution (HK) Limited"
+  :vendor/country "HKG"
+  :vendor/regions #{"HKG"}
+  :vendor/role #{:technology-integrator :managed-services-provider}
+  :vendor/offering "Enterprise technology integration and managed services"
+  :vendor/source-url "https://www.jos.com/"
+  :vendor/contact-url "https://www.jos.com/contact-us/"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page
+  :vendor/restriction-note "GPU product authority and contracting entity must be confirmed"}
+ {:vendor/id "eviden-advanced-computing"
+  :vendor/legal-name "Eviden"
+  :vendor/country "FRA"
+  :vendor/regions #{"EU"}
+  :vendor/role #{:hpc-systems-vendor :solution-integrator}
+  :vendor/offering "Advanced computing and AI infrastructure"
+  :vendor/source-url "https://eviden.com/solutions/advanced-computing/"
+  :vendor/contact-url "https://eviden.com/contact-us/"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page
+  :vendor/restriction-note "EU Member-State contracting entity must be identified"}
+ {:vendor/id "2crsi"
+  :vendor/legal-name "2CRSi SA"
+  :vendor/country "FRA"
+  :vendor/regions #{"EU"}
+  :vendor/role #{:server-manufacturer :systems-vendor}
+  :vendor/offering "High-performance and AI computing systems"
+  :vendor/source-url "https://2crsi.com/"
+  :vendor/contact-url "https://2crsi.com/contact/"
+  :vendor/verified-on "2026-07-20"
+  :vendor/source-status :verified-public-page
+  :vendor/restriction-note "Exact GPU configurations, CE documentation and service territory require RFQ confirmation"}]
