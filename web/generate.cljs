@@ -152,18 +152,6 @@
    [".tb-search" {:display "flex" :gap ".75rem" :flex-wrap "wrap"
                   :align-items "flex-end" :margin-bottom "1.5rem"}]
    [".tb-search .dads-form-control-label" {:flex 1 :min-width "14rem"}]
-   ;; select は上流 DADS の vendored subset に無い(dds.css に .dads-select が
-   ;; 無い)ので、.dads-input-text__input と寸法・境界・focus を揃える。
-   [".tb-select" {:box-sizing "border-box" :width "100%" :height "3rem"
-                  :border "1px solid var(--color-neutral-solid-gray-600)"
-                  :background-color "var(--color-neutral-white)"
-                  :padding "calc(12 / 16 * 1rem) calc(16 / 16 * 1rem)"
-                  :border-radius "calc(8 / 16 * 1rem)"
-                  :color "var(--color-neutral-solid-gray-900)"
-                  :font "inherit" :line-height 1}]
-   [".tb-select:focus-visible" {:outline "calc(4 / 16 * 1rem) solid var(--color-neutral-black)"
-                                :outline-offset "calc(2 / 16 * 1rem)"
-                                :box-shadow "0 0 0 calc(2 / 16 * 1rem) var(--color-primitive-yellow-300)"}]
    [".dads-input-text__input" {:width "100%"}]
    ;; 社員カードは search.cljs が実行時に注入する(dds-ext-card + tb-card)
    ["#board" {:display "grid"
@@ -200,11 +188,7 @@
             :border "1px solid var(--color-neutral-solid-gray-200)"
             :border-radius 4 :padding "1px 5px" :font-size ".9em"}]])
 
-(def app-media
-  {"(hover: hover)"
-   [[".tb-select:hover" {:border-color "var(--color-neutral-black)"}]]})
-
-(def app-css (css/css {:rules app-rules :media app-media}))
+(def app-css (css/css {:rules app-rules}))
 
 ;; Read AFTER the actor runs -- the board reflects the post-run Store
 ;; (op1's committed dept change included).
@@ -296,9 +280,9 @@
                        :placeholder "氏名・部署で検索…"}))
      (dds/form-field
       {:label "部署" :for "dept"}
-      (into [:select {:id "dept" :class "tb-select"} [:option {:value ""} "全部署"]]
-            (for [d (sort (distinct (map :dept employees)))]
-              [:option {:value d} d])))]
+      (dds/select {:id "dept"}
+                  (into [["" "全部署"]]
+                        (for [d (sort (distinct (map :dept employees)))] [d d]))))]
     [:div {:id "board"}]
     [:p {:id "empty" :class "tb-empty" :hidden true} "該当する社員はいません。"]
     [:p {:class "tb-note"}
