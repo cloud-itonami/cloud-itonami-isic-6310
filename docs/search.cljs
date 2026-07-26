@@ -15,8 +15,10 @@
       (.replaceAll "<" "&lt;")
       (.replaceAll ">" "&gt;")))
 
+;; dds-ext-card は jp-go-dds の layout 拡張(生成側の静的カードと同じ見た目)、
+;; tb-card は本ページ固有の中身の字送り。どちらも generate.cljs 側で定義済み。
 (defn- card-html [e]
-  (str "<div class=\"card\">"
+  (str "<div class=\"dds-ext-card tb-card\">"
        "<h3>" (esc (:name e)) "</h3>"
        "<div class=\"meta\">" (esc (:grade e)) " · " (esc (:dept e))
        " · 上長: " (esc (:manager e)) "</div>"
