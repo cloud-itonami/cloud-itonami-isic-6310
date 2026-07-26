@@ -32,6 +32,7 @@
 ;; dds.css の読み込みパスは環境変数 JP_GO_DDS_CSS で上書きできる
 ;; (CI / worktree など monorepo 以外のレイアウト用)。
 (require '[clojure.string :as cstr]
+         '[css.core :as css]
          '[jp-go-dds.core :as dds]
          '[jp-go-dds.page :as page]
          '[langgraph.graph :as g]
@@ -136,60 +137,74 @@
 ;; (kotoba-uiux 規約)。レイアウトの土台は dds-ext-*(jp-go-dds.core/ext-css)。
 ;; select は上流 DADS の vendored subset に無い(dds.css に .dads-select が
 ;; 無い)ので、.dads-input-text__input と寸法・境界・focus を揃える。
-(def app-css
-  (str
-   ".tb-header{padding-block:2.5rem 0}"
-   ".tb-header .dads-heading{margin:0 0 .5rem}"
-   ".tb-lead{color:var(--color-neutral-solid-gray-700);line-height:1.7;margin:.75rem 0 0}"
-   ".tb-pitch{margin-block:2rem}"
-   ".tb-pitch .dads-heading{margin:0 0 .75rem}"
-   ".tb-pitch p{margin:0 0 .75rem;line-height:1.8}"
-   ".tb-pitch ul{margin:.75rem 0 0;padding-left:1.25rem;line-height:1.9}"
-   ".tb-ctarow{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem}"
-   ".tb-fine{color:var(--color-neutral-solid-gray-600);font-size:.8125rem;"
-   "line-height:1.8;margin-top:1rem}"
-   ".tb-search{display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1.5rem}"
-   ".tb-search .dads-form-control-label{flex:1;min-width:14rem}"
-   ".tb-select{box-sizing:border-box;width:100%;height:3rem;"
-   "border:1px solid var(--color-neutral-solid-gray-600);"
-   "background-color:var(--color-neutral-white);"
-   "padding:calc(12 / 16 * 1rem) calc(16 / 16 * 1rem);"
-   "border-radius:calc(8 / 16 * 1rem);color:var(--color-neutral-solid-gray-900);"
-   "font:inherit;line-height:1}"
-   "@media (hover: hover){.tb-select:hover{border-color:var(--color-neutral-black)}}"
-   ".tb-select:focus-visible{outline:calc(4 / 16 * 1rem) solid var(--color-neutral-black);"
-   "outline-offset:calc(2 / 16 * 1rem);"
-   "box-shadow:0 0 0 calc(2 / 16 * 1rem) var(--color-primitive-yellow-300)}"
-   ".dads-input-text__input{width:100%}"
+(def app-rules
+  [[".tb-header" {:padding-block "2.5rem 0"}]
+   [".tb-header .dads-heading" {:margin "0 0 .5rem"}]
+   [".tb-lead" {:color "var(--color-neutral-solid-gray-700)" :line-height 1.7
+                :margin ".75rem 0 0"}]
+   [".tb-pitch" {:margin-block "2rem"}]
+   [".tb-pitch .dads-heading" {:margin "0 0 .75rem"}]
+   [".tb-pitch p" {:margin "0 0 .75rem" :line-height 1.8}]
+   [".tb-pitch ul" {:margin ".75rem 0 0" :padding-left "1.25rem" :line-height 1.9}]
+   [".tb-ctarow" {:display "flex" :gap ".75rem" :flex-wrap "wrap" :margin-top "1.25rem"}]
+   [".tb-fine" {:color "var(--color-neutral-solid-gray-600)" :font-size ".8125rem"
+                :line-height 1.8 :margin-top "1rem"}]
+   [".tb-search" {:display "flex" :gap ".75rem" :flex-wrap "wrap"
+                  :align-items "flex-end" :margin-bottom "1.5rem"}]
+   [".tb-search .dads-form-control-label" {:flex 1 :min-width "14rem"}]
+   ;; select は上流 DADS の vendored subset に無い(dds.css に .dads-select が
+   ;; 無い)ので、.dads-input-text__input と寸法・境界・focus を揃える。
+   [".tb-select" {:box-sizing "border-box" :width "100%" :height "3rem"
+                  :border "1px solid var(--color-neutral-solid-gray-600)"
+                  :background-color "var(--color-neutral-white)"
+                  :padding "calc(12 / 16 * 1rem) calc(16 / 16 * 1rem)"
+                  :border-radius "calc(8 / 16 * 1rem)"
+                  :color "var(--color-neutral-solid-gray-900)"
+                  :font "inherit" :line-height 1}]
+   [".tb-select:focus-visible" {:outline "calc(4 / 16 * 1rem) solid var(--color-neutral-black)"
+                                :outline-offset "calc(2 / 16 * 1rem)"
+                                :box-shadow "0 0 0 calc(2 / 16 * 1rem) var(--color-primitive-yellow-300)"}]
+   [".dads-input-text__input" {:width "100%"}]
    ;; 社員カードは search.cljs が実行時に注入する(dds-ext-card + tb-card)
-   "#board{display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));"
-   "gap:1rem;margin-top:1rem}"
-   "#board>*{min-width:0}"
-   ".tb-card h3{margin:0 0 .35rem;font-size:1rem}"
-   ".tb-card .meta{color:var(--color-neutral-solid-gray-600);font-size:.8125rem;line-height:1.7}"
-   ".tb-card ul{margin:.5rem 0 0;padding-left:1.125rem;font-size:.8125rem;line-height:1.7}"
-   ".tb-empty{color:var(--color-neutral-solid-gray-600);margin-top:1rem}"
-   ".tb-note{color:var(--color-neutral-solid-gray-600);font-size:.875rem;"
-   "line-height:1.8;margin-top:1rem}"
-   ".tb-verdict-basis{display:block;margin-block:.15rem}"
+   ["#board" {:display "grid"
+              :grid-template-columns "repeat(auto-fill,minmax(16rem,1fr))"
+              :gap "1rem" :margin-top "1rem"}]
+   ["#board>*" {:min-width 0}]
+   [".tb-card h3" {:margin "0 0 .35rem" :font-size "1rem"}]
+   [".tb-card .meta" {:color "var(--color-neutral-solid-gray-600)"
+                      :font-size ".8125rem" :line-height 1.7}]
+   [".tb-card ul" {:margin ".5rem 0 0" :padding-left "1.125rem"
+                   :font-size ".8125rem" :line-height 1.7}]
+   [".tb-empty" {:color "var(--color-neutral-solid-gray-600)" :margin-top "1rem"}]
+   [".tb-note" {:color "var(--color-neutral-solid-gray-600)" :font-size ".875rem"
+                :line-height 1.8 :margin-top "1rem"}]
+   [".tb-verdict-basis" {:display "block" :margin-block ".15rem"}]
    ;; チップのラベルを途中で折り返さない(「人間承認」が「人間承/認」に割れる)。
    ;; .dads-table 側が overflow-x:auto なので、広がっても表の中でスクロールする。
-   ".dads-table .dads-chip-label{white-space:nowrap}"
+   [".dads-table .dads-chip-label" {:white-space "nowrap"}]
    ;; 台帳 / 組織図 / CSV は等幅。横に長いので自身の中でだけ横スクロールさせる
-   "pre{font-family:var(--font-family-mono);font-size:.8125rem;line-height:1.7;"
-   "background:var(--color-neutral-solid-gray-50);"
-   "border:1px solid var(--color-neutral-solid-gray-200);border-radius:8px;"
-   "padding:1rem;overflow-x:auto;margin-top:1rem}"
-   ".tb-guarantees{line-height:1.9;padding-left:1.25rem;margin:0}"
-   ".tb-footer{border-top:1px solid var(--color-neutral-solid-gray-200);"
-   "margin-top:3rem;padding-block:1.5rem 3rem;"
-   "color:var(--color-neutral-solid-gray-600);font-size:.875rem;line-height:1.8}"
-   ".tb-footer p{margin:0 0 .75rem}"
-   ".tb-footer .cta{font-size:.9375rem;font-weight:700;"
-   "color:var(--color-neutral-solid-gray-900)}"
-   "code{font-family:var(--font-family-mono);background:var(--color-neutral-solid-gray-50);"
-   "border:1px solid var(--color-neutral-solid-gray-200);border-radius:4px;"
-   "padding:1px 5px;font-size:.9em}"))
+   ["pre" {:font-family "var(--font-family-mono)" :font-size ".8125rem"
+           :line-height 1.7 :background "var(--color-neutral-solid-gray-50)"
+           :border "1px solid var(--color-neutral-solid-gray-200)"
+           :border-radius 8 :padding "1rem" :overflow-x "auto" :margin-top "1rem"}]
+   [".tb-guarantees" {:line-height 1.9 :padding-left "1.25rem" :margin 0}]
+   [".tb-footer" {:border-top "1px solid var(--color-neutral-solid-gray-200)"
+                  :margin-top "3rem" :padding-block "1.5rem 3rem"
+                  :color "var(--color-neutral-solid-gray-600)"
+                  :font-size ".875rem" :line-height 1.8}]
+   [".tb-footer p" {:margin "0 0 .75rem"}]
+   [".tb-footer .cta" {:font-size ".9375rem" :font-weight 700
+                       :color "var(--color-neutral-solid-gray-900)"}]
+   ["code" {:font-family "var(--font-family-mono)"
+            :background "var(--color-neutral-solid-gray-50)"
+            :border "1px solid var(--color-neutral-solid-gray-200)"
+            :border-radius 4 :padding "1px 5px" :font-size ".9em"}]])
+
+(def app-media
+  {"(hover: hover)"
+   [[".tb-select:hover" {:border-color "var(--color-neutral-black)"}]]})
+
+(def app-css (css/css {:rules app-rules :media app-media}))
 
 ;; Read AFTER the actor runs -- the board reflects the post-run Store
 ;; (op1's committed dept change included).
@@ -355,6 +370,9 @@
   [[:script {:type "application/json" :id "board-data"}
     (js/JSON.stringify (clj->js (mapv employee->json-entry employees)))]
    [:script {:src "https://cdn.jsdelivr.net/npm/scittle@0.6.22/dist/scittle.js"}]
+   ;; search.cljs は hiccup を html.core で文字列化する(生 HTML を書かない)ので、
+   ;; そのライブラリもブラウザへ同梱する。読み込み順は依存順。
+   [:script {:type "application/x-scittle" :src "html_core.cljs"}]
    [:script {:type "application/x-scittle" :src "search.cljs"}]])
 
 (fs/mkdirSync "../docs" #js {:recursive true})
@@ -370,5 +388,9 @@
        scripts)
       "\n"))
 (fs/copyFileSync "search.cljs" "../docs/search.cljs")
+;; ブラウザ側 .cljs はコピーするだけ(ビルド無し)。
+(def html-root
+  (or (some-> js/process.env.KOTOBA_HTML_ROOT not-empty) "../../../kotoba-lang/html"))
+(fs/copyFileSync (str html-root "/src/html/core.cljc") "../docs/html_core.cljs")
 (println (str "wrote docs/index.html (" (count employees) " employees; "
               (pr-str (mapv :disposition results)) ")"))

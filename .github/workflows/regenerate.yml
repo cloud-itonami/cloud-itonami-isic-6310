@@ -48,7 +48,7 @@ jobs:
             generate.cljs
       - name: verify (headless harness)
         working-directory: cloud-itonami/cloud-itonami-isic-6310/web
-        run: npx nbb verify_search.cljs
+        run: npx nbb --classpath "../../../kotoba-lang/html/src" verify_search.cljs
       - name: commit when changed
         working-directory: cloud-itonami/cloud-itonami-isic-6310
         run: |
