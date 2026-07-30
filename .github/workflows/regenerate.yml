@@ -29,8 +29,20 @@ jobs:
         with: {repository: kotoba-lang/html, path: kotoba-lang/html}
       - uses: actions/checkout@v4
         with: {repository: kotoba-lang/jp-go-digital-design-system, path: kotoba-lang/jp-go-digital-design-system}
+      # generate.cljs requires css.core (kotoba-lang/css) since the
+      # EDN/hiccup CSS refactor, and store's DatomicStore needs
+      # langchain.db (kotoba-lang/langchain-store). Without these two
+      # checkouts the nightly run dies on "Could not find namespace:
+      # css.core" / "langchain-store.core" and the board silently stops
+      # refreshing -- itself a 的確表示義務 failure. Matches isic-6399's
+      # regenerate.yml. (Verified 2026-07-30: same fix as isic-7810, where
+      # the run had been failing nightly since the css refactor.)
+      - uses: actions/checkout@v4
+        with: {repository: kotoba-lang/css, path: kotoba-lang/css}
       - uses: actions/checkout@v4
         with: {repository: kotoba-lang/langchain, path: kotoba-lang/langchain}
+      - uses: actions/checkout@v4
+        with: {repository: kotoba-lang/langchain-store, path: kotoba-lang/langchain-store}
       - uses: actions/checkout@v4
         with: {repository: kotoba-lang/langgraph, path: kotoba-lang/langgraph}
       - uses: actions/setup-node@v4
@@ -44,7 +56,7 @@ jobs:
         # checkout depth (which differs from the monorepo layout here).
         run: |
           npx nbb \
-            --classpath "../src:../../../kotoba-lang/html/src:../../../kotoba-lang/jp-go-digital-design-system/src:../../../kotoba-lang/langchain/src:../../../kotoba-lang/langgraph/src" \
+            --classpath "../src:../../../kotoba-lang/html/src:../../../kotoba-lang/css/src:../../../kotoba-lang/jp-go-digital-design-system/src:../../../kotoba-lang/langchain/src:../../../kotoba-lang/langchain-store/src:../../../kotoba-lang/langgraph/src" \
             generate.cljs
       - name: verify (headless harness)
         working-directory: cloud-itonami/cloud-itonami-isic-6310/web
