@@ -10,10 +10,10 @@
   keeps the deterministic demo seed — the demo and the policy tests never
   depend on credentialed data.
 
-  JVM-only (filesystem seed is a dev/ops concern); the actor core stays
-  portable `.cljc`."
+  The filesystem boundary is capability-injected: `read-people` takes a
+  `read-string!` fn (path -> string or nil) instead of importing java.io;
+  hosts supply their own adapter (default uses clojure.core/slurp)."
   (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
             [clojure.string :as str]
             [talent.store :as store]))
 
@@ -28,17 +28,26 @@
   [content]
   (boolean (re-find #"^/annex/objects/" (str/trim (or content "")))))
 
+(def default-read-string!
+  "Default host adapter: clojure.core/slurp (no clojure.java.io / java.*
+  interop at the require level). Hosts without a filesystem pass their own fn
+  or call the 2-arity."
+  (fn [path] (try (slurp path) (catch Exception _ nil))))
+
 (defn read-people
-  "Read line-delimited `:person/*` EDN. Returns [] when the file is missing,
-  an annex pointer, or unparseable — never throws."
-  [path]
-  (let [f (io/file path)]
-    (if (and (.exists f) (not (annex-pointer? (slurp f))))
-      (->> (str/split-lines (slurp f))
-           (map str/trim)
-           (filter #(str/starts-with? % "{"))
-           (keep #(try (edn/read-string %) (catch Exception _ nil))))
-      [])))
+  "Read line-delimited `:person/*` EDN. `read-string!` is the injected
+  capability fn (path -> string or nil); defaults to `default-read-string!`.
+  Returns [] when the file is missing, an annex pointer, or unparseable —
+  never throws."
+  ([path] (read-people path default-read-string!))
+  ([path read-string!]
+   (let [content (read-string! path)]
+     (if (and content (not (annex-pointer? content)))
+       (->> (str/split-lines content)
+            (map str/trim)
+            (filter #(str/starts-with? % "{"))
+            (keep #(try (edn/read-string %) (catch Exception _ nil))))
+       []))))
 
 (defn- person-id [p]
   (or (:person/id p) (:person/mail p) (some-> (:db/id p) str)))

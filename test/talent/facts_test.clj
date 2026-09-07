@@ -2,7 +2,6 @@
   "Tests for the m365-archive facts seed adapter, including the graceful
   fallback when the DataLad/git-annex dataset isn't materialized."
   (:require [clojure.test :refer [deftest is testing]]
-            [clojure.java.io :as io]
             [talent.facts :as facts]
             [talent.store :as store]))
 
@@ -18,10 +17,11 @@
        ":person/grade :G4 :person/dept \"営業\"}\n"))
 
 (defn- write-tmp! [content]
-  (let [f (io/file (System/getProperty "java.io.tmpdir")
-                   (str "talent-facts-" (hash content) ".edn"))]
-    (spit f content)
-    (.getPath f)))
+  "Write to the host temp dir via a plain path string (no java.io types)."
+  (let [path (str (System/getProperty "java.io.tmpdir")
+                  "/talent-facts-" (hash content) ".edn")]
+    (spit path content)
+    path))
 
 (deftest reads-and-maps-internal-people
   (let [emps (facts/load-employees (write-tmp! fixture))]
