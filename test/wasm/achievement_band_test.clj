@@ -8,13 +8,17 @@
   :main-arity); the two real i32 inputs are written into the guest's
   exported linear memory at fixed offsets before calling main() -- see
   wasm/achievement_band.kotoba's header comment for the offset layout."
-  (:require [clojure.java.io :as io]
-            [clojure.test :refer [deftest is testing]]
+  (:require             [clojure.test :refer [deftest is testing]]
             [kototama.contract :as contract]
             [kototama.tender :as tender]))
 
 (defn- wasm-bytes []
-  (.readAllBytes (io/input-stream (io/file "wasm/achievement_band.wasm"))))
+  "Fixture checked in as hex text (wasm/achievement_band.wasm.hex); decode
+  with pure clojure — no java.io / java.nio in the test path."
+  (->> (slurp "wasm/achievement_band.wasm.hex")
+       (re-seq #"..")
+       (mapv #(Integer/parseInt % 16))
+       byte-array))
 
 (defn- run-achievement-band [sum-actual sum-target]
   (let [instance (tender/instantiate (wasm-bytes) [] (contract/host-caps {}))
