@@ -31,7 +31,7 @@
 ;;
 ;; dds.css の読み込みパスは環境変数 JP_GO_DDS_CSS で上書きできる
 ;; (CI / worktree など monorepo 以外のレイアウト用)。
-(require '[clojure.string :as cstr]
+(require '[kotoba.lang.text :as cstr]
          '[css.core :as css]
          '[jp-go-dds.core :as dds]
          '[jp-go-dds.page :as page]
