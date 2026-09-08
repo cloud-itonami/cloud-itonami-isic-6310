@@ -14,7 +14,7 @@
   `read-string!` fn (path -> string or nil) instead of importing java.io;
   hosts supply their own adapter (default uses clojure.core/slurp)."
   (:require [clojure.edn :as edn]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [talent.store :as store]))
 
 (def facts-dir "../m365-archive/facts")

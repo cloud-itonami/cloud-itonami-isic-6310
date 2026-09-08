@@ -5,7 +5,7 @@
   only renders the approved columns, so a report can never disclose more
   than policy allows — the kaonavi 'CSV出力' feature, with the column
   policy fixed in code."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [talent.store :as store]))
 
 (defn render-csv

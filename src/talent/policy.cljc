@@ -28,7 +28,7 @@
                              runs showed a real LLM can write 「女性なので…」
                              in the rationale while reporting clean cites.)"
   (:require [clojure.set :as set]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [talent.store :as store]))
 
 ;; ───────────────────────── policy tables ─────────────────────────
