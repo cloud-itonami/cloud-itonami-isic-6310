@@ -142,9 +142,9 @@ bin/kotoba-clj wasm emit ../../cloud-itonami/cloud-itonami-isic-6310/wasm/achiev
   (未達), the no-goals zero-target edge case, the exact 70%/100%
   boundary values, and parity against both employees in
   `talent.store/demo-data` (e-001's two goals, e-002's single goal).
-  `clojure -M:dev:test` — 41 tests, 135 assertions, 0 failures, 0 errors
+  `kbb -M:dev:test` — 41 tests, 135 assertions, 0 failures, 0 errors
   (35 tests / 127 assertions pre-existing + this module's 6/8).
-  `clojure -M:lint` — 0 errors, 0 warnings.
+  `kbb -M:lint` — 0 errors, 0 warnings.
 
 Fleet deployment: not attempted in this pass — see
 `cloud-itonami-isic-6492`/`cloud-itonami-isic-6511` for the established

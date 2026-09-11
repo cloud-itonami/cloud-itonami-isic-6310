@@ -152,9 +152,9 @@ back to **hold** and *cannot* be overridden by a human; only soft cases
 ## Run
 
 ```bash
-clojure -M:dev:run     # drive the 4 kaonavi-equivalent domains through one OperationActor
-clojure -M:dev:test    # policy contract · store parity · LLM advisor · phases · facts
-clojure -M:lint        # clj-kondo (errors fail; CI mirrors this)
+kbb -M:dev:run     # drive the 4 kaonavi-equivalent domains through one OperationActor
+kbb -M:dev:test    # policy contract · store parity · LLM advisor · phases · facts
+kbb -M:lint        # clj-kondo (errors fail; CI mirrors this)
 ```
 
 > CI: `.github/workflows/ci.yml` runs lint + the full suite (it reconstructs the
