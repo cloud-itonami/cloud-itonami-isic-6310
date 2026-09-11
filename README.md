@@ -9,12 +9,12 @@ It also contains an **AI data-center business lane** for GPU asset acquisition,
 external tax/compliance evidence, installation, commissioning, compute-service
 operation and realised-period settlement. See
 [`docs/adr/0003-ai-datacenter-business-lane.md`](docs/adr/0003-ai-datacenter-business-lane.md)
-and `src/ai_datacenter/business.cljc`. It records—but never self-certifies—tax
+and `src/ai_datacenter/business.cljk`. It records—but never self-certifies—tax
 eligibility or engineering acceptance, and it encodes no guaranteed return.
 
 The procurement implementation, public-source vendor seed, RFQ template,
 negotiation contract pack and production-readiness checklist are under
-`src/ai_datacenter/procurement.cljc`, `data/ai-datacenter/` and
+`src/ai_datacenter/procurement.cljk`, `data/ai-datacenter/` and
 `docs/{procurement,contracts}`. Vendor inquiries are generated as approval-
 required drafts; this repository never silently sends or accepts one.
 
@@ -64,20 +64,20 @@ The demo above is a
 static, zero-build Talent Board over the demo org (synthetic data),
 plus a PolicyGovernor verdict table for the four kaonavi-equivalent
 operations. The board, the verdicts AND the audit
-ledger are not hand-typed: `web/generate.cljs` (nbb) runs the FULL
+ledger are not hand-typed: `web/generate.cljk` (nbb) runs the FULL
 OperationActor StateGraph (advisor -> PolicyGovernor -> phase gate ->
 approval interrupt) for the four operations at build time and renders
 the post-run Store plus the append-only ledger those runs wrote; protected attributes are
 structurally absent from the page data (that's the minimum-disclosure
-gate working). In-browser search is `web/search.cljs` run by scittle
+gate working). In-browser search is `web/search.cljk` run by scittle
 (ClojureScript in the browser -- no hand-written JS, no build step),
-and `web/verify_search.cljs` is the headless nbb harness that
+and `web/verify_search.cljk` is the headless nbb harness that
 exercises the real client logic against the real generated page.
 
 ```bash
 cd web && ../../../../node_modules/.bin/nbb \
   --classpath "../src:../../../kotoba-lang/html/src:../../../kotoba-lang/jp-go-digital-design-system/src:../../../kotoba-lang/langchain/src:../../../kotoba-lang/langgraph/src" \
-  generate.cljs          # regenerate docs/index.html + docs/search.cljs
+  generate.cljs          # regenerate docs/index.html + docs/search.cljk
 ../../../../node_modules/.bin/nbb verify_search.cljs   # headless UI logic check
 ```
 
@@ -88,7 +88,7 @@ superproject **ADR-2607261600**: この actor は労働・人事の法規制 —
 サービスの視覚言語に揃える方が利用者の信頼判断に効く）。DADS は **light mode
 固定**（上流デジタル庁に dark palette が無い）なので、移行前の
 `prefers-color-scheme` による dark 対応は意図的に落としています。
-`web/generate.cljs` が読む vendored `dds.css` のパスは、monorepo 以外の
+`web/generate.cljk` が読む vendored `dds.css` のパスは、monorepo 以外の
 レイアウト（CI / git worktree）からは環境変数 `JP_GO_DDS_CSS` で上書きできます。
 
 See [`docs/operator-quickstart.md`](docs/operator-quickstart.md) to go
@@ -172,14 +172,14 @@ approves → commit**), then prints the immutable audit ledger.
 
 | File | Actor / role |
 |---|---|
-| `src/talent/hrllm.cljc` | **Advisor** protocol — `mock-advisor` (default) ‖ `llm-advisor` (real `langchain.model` ChatModel) |
-| `src/talent/policy.cljc` | **PolicyGovernor** — RBAC · purpose · fairness · minimal-disclosure · escalation |
-| `src/talent/phase.cljc` | **Phase 0→3 rollout** — read-only → assisted → supervised-auto (HR analog of robotaxi ODD) |
-| `src/talent/operation.cljc` | **OperationActor** — langgraph-clj StateGraph (1 run = 1 HR op); Store/Advisor/Phase injected |
-| `src/talent/store.cljc` | **Store** protocol — `MemStore` (default) ‖ `DatomicStore` (`langchain.db`, swappable to Datomic Local / kotoba-server) + append-only ledger |
+| `src/talent/hrllm.cljk` | **Advisor** protocol — `mock-advisor` (default) ‖ `llm-advisor` (real `langchain.model` ChatModel) |
+| `src/talent/policy.cljk` | **PolicyGovernor** — RBAC · purpose · fairness · minimal-disclosure · escalation |
+| `src/talent/phase.cljk` | **Phase 0→3 rollout** — read-only → assisted → supervised-auto (HR analog of robotaxi ODD) |
+| `src/talent/operation.cljk` | **OperationActor** — langgraph-clj StateGraph (1 run = 1 HR op); Store/Advisor/Phase injected |
+| `src/talent/store.cljk` | **Store** protocol — `MemStore` (default) ‖ `DatomicStore` (`langchain.db`, swappable to Datomic Local / kotoba-server) + append-only ledger |
 | `src/talent/facts.cljc` | **seed adapter** — hydrate employees/goals/surveys from `m365-archive/facts` (annex-aware fallback) |
-| `src/talent/report.cljc` | **ReportActor** — governed CSV/帳票 + org-chart projection |
-| `src/talent/sim.cljc` | demo driver |
+| `src/talent/report.cljk` | **ReportActor** — governed CSV/帳票 + org-chart projection |
+| `src/talent/sim.cljk` | demo driver |
 | `wasm/achievement_band.kotoba` | WASM port (`kotoba wasm emit` → `kototama.tender`) of `talent.hrllm`'s MBO/OKR achievement-rate + threshold-band formula — see `wasm/README.md` |
 | `test/talent/*_test.cljc` + `test/wasm/*_test.clj` | policy contract · store parity (Mem≡Datomic) · LLM advisor · phase rollout · facts · WASM achievement-band — **41 tests / 135 assertions** |
 

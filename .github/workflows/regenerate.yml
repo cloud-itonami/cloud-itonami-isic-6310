@@ -1,6 +1,6 @@
 # Nightly regeneration -- freshness automation mirroring cloud-itonami-isic-6399's
 # regenerate.yml (ADR-2607122300 flagship checklist item 4): rebuild docs/
-# through the real actor (web/generate.cljs runs the full OperationActor
+# through the real actor (web/generate.cljk runs the full OperationActor
 # StateGraph -- HR-LLM advisor -> PolicyGovernor -> phase gate -> approval --
 # for the six kaonavi-equivalent demo operations) and verify with the
 # headless harness, then commit only when the rendered board actually

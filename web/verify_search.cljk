@@ -1,9 +1,9 @@
-;; Headless verification harness for docs/search.cljs -- stubs the DOM
+;; Headless verification harness for docs/search.cljk -- stubs the DOM
 ;; surface search.cljs touches, feeds it the REAL JSON block extracted
 ;; from the generated docs/index.html, loads search.cljs, and asserts
 ;; the rendered board + a simulated search interaction + the page's
 ;; policy-verdict content. nbb script (Node-harnesses-in-nbb rule),
-;; same pattern as cloud-itonami-isic-6399/web/verify_search.cljs.
+;; same pattern as cloud-itonami-isic-6399/web/verify_search.cljk.
 ;;
 ;; Run (from this web/ directory):
 ;;   ../../../../node_modules/.bin/nbb verify_search.cljs
@@ -42,7 +42,7 @@
 
 ;; ---- load the real client code --------------------------------------------
 
-(load-string (fs/readFileSync "../docs/search.cljs" "utf8"))
+(load-string (fs/readFileSync "../docs/search.cljk" "utf8"))
 
 (defn- board-html [] (aget (get elements "board") "innerHTML"))
 (defn- assert! [ok? msg]

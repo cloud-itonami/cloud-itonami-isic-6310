@@ -2,10 +2,10 @@
 
 `achievement_band.kotoba` is a port of `talent.hrllm`'s MBO/OKR
 achievement-rate formula and its threshold banding (see
-`draft-evaluation`'s `pct`/`rate`/`band` in `src/talent/hrllm.cljc`) into
+`draft-evaluation`'s `pct`/`rate`/`band` in `src/talent/hrllm.cljk`) into
 the minimal `.kotoba` language subset, compiled to a real WASM module via
 `kotoba wasm emit`, and hosted via `kototama.tender`
-(`test/wasm/achievement_band_test.clj`).
+(`test/wasm/achievement_band_test.cljk`).
 
 This follows the same `kotoba wasm emit` → `kototama.tender` pipeline
 `cloud-itonami-isic-6492`'s `wasm/affordability.kotoba` and
@@ -21,7 +21,7 @@ Every prior cloud-itonami wasm port (`credit.registry`/`fundmgmt.registry`/
 dedicated `registry.cljc`/`governor.cljc` — a trusted layer independent of
 the LLM advisor. **This repo (`cloud-itonami-isic-6310`) has no
 `registry.cljc`.** Its only decision-making module is
-`src/talent/policy.cljc` (the PolicyGovernor), and every check in it —
+`src/talent/policy.cljk` (the PolicyGovernor), and every check in it —
 `rbac-violations`, `purpose-violations`, `fairness-violations`,
 `disclosure-violations`, `rationale-suspect?`, `high-stakes` — is a
 categorical/set-membership/RBAC check, not an arithmetic one (the one
@@ -76,7 +76,7 @@ document). The port therefore:
   unit (the demo data's goals are all counts — "新規受注 N 件" etc.), this
   is a reasonable equivalent aggregate metric and gives an *identical*
   band to the original for every case in `talent.store/demo-data`
-  (verified in `test/wasm/achievement_band_test.clj`'s
+  (verified in `test/wasm/achievement_band_test.cljk`'s
   `achievement-band-wasm-demo-org-parity`) and for any employee with a
   single goal (where ratio-of-sums and mean-of-ratios are the same
   number). It diverges from the original's exact percentage when goals
@@ -135,7 +135,7 @@ bin/kotoba-clj wasm emit ../../cloud-itonami/cloud-itonami-isic-6310/wasm/achiev
 - `kotoba wasm emit` compiles the module cleanly on the first attempt:
   136 bytes, 0 data segments, 0 host imports, `main` exported with `i32`
   result, 2 functions (`achievement-band`, `main`).
-- `test/wasm/achievement_band_test.clj` loads and runs the compiled
+- `test/wasm/achievement_band_test.cljk` loads and runs the compiled
   `.wasm` through a real `kototama.tender/instantiate`/`call-main`
   (Chicory `Instance`, not a mock) across 6 `deftest`s / 8 assertions:
   full attainment (達成), partial attainment (概ね達成), below-floor

@@ -37,7 +37,7 @@ Two options:
 
 ## 3. Understand the PolicyGovernor
 
-The independent PolicyGovernor lives in [`src/talent/policy.cljc`](../src/talent/policy.cljc) and enforces role-based access control, fairness rules, purpose limits, and disclosure minimization. It is the gate that audits every HR-LLM decision and cannot be bypassed. Review it alongside your compliance and audit requirements.
+The independent PolicyGovernor lives in [`src/talent/policy.cljk`](../src/talent/policy.cljk) and enforces role-based access control, fairness rules, purpose limits, and disclosure minimization. It is the gate that audits every HR-LLM decision and cannot be bypassed. Review it alongside your compliance and audit requirements.
 
 ## 4. Customize the policy pack
 
