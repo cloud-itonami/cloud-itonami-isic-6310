@@ -13,7 +13,7 @@
                                                        → HRBP approve → commit
     op5b 配置転換が年齢・通院を判断根拠に引用           → 公正性 REJECT → hold
 
-  Run: clojure -M:dev:run"
+  Run: kbb -M:dev:run"
   (:require [langgraph.graph :as g]
             [talent.store :as store]
             [talent.operation :as op]

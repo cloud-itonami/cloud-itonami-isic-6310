@@ -130,7 +130,7 @@ high-stakes）だけが ApprovalActor で人間が可否を決める。
 PolicyGovernor の**最小開示**ゲートで許可列のみを出力する。CSV/帳票は SaaS の
 出力機能の代替で、列ポリシーをコードで固定できる点が上回る。
 
-## 7. デモ（`clojure -M:dev:run`）
+## 7. デモ（`kbb -M:dev:run`）
 
 `src/talent/sim.cljk` が 4 ドメインを actor に通す:
 
@@ -144,7 +144,7 @@ op4  サーベイ分析が離職予兆 high（重大）        → 人間承認�
 
 最後に監査台帳（commit/reject/承認）を表示 — 規程適合の証跡が同一ログから出る。
 
-## 8. テスト（`clojure -M:dev:test`）
+## 8. テスト（`kbb -M:dev:test`）
 
 `test/talent/policy_contract_test.cljk` が**規程契約を実行可能**にする:
 

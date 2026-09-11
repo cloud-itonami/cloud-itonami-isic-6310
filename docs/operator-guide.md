@@ -8,8 +8,8 @@ This guide is for people who want to start an open business from
 ```bash
 git clone https://github.com/gftdcojp/cloud-itonami-6310
 cd cloud-itonami-6310
-clojure -M:dev:test
-clojure -M:dev:run
+kbb -M:dev:test
+kbb -M:dev:run
 ```
 
 The default demo uses synthetic data. Production employee records must stay
@@ -30,8 +30,8 @@ outside the repository and be injected through a store adapter.
 - configure Datomic Local, kotoba-server or an equivalent durable SSoT
 - configure the LLM adapter through environment variables or secret manager
 - define customer RBAC, purpose and disclosure rules
-- run `clojure -M:dev:test`
-- run `clojure -M:lint`
+- run `kbb -M:dev:test`
+- run `kbb -M:lint`
 - verify audit-ledger export
 - document backup and restore
 - document incident response

@@ -64,14 +64,14 @@ robotaxi の ODD 段階拡大（介入率が下がった範囲から自動化を
 本 project は `com-junkawasaki/root` superproject の west project であり、deps は
 sibling を `:local/root`（`../../com-junkawasaki/langgraph-clj` 等）で参照する。
 `langgraph-clj` / `langchain-clj` は **public** なので、CI の test job は両者を
-期待相対パスに checkout して west レイアウトを再構成し、`clojure -M:dev:test` を
-回す（token 不要）。lint job は `clojure -M:lint`（clj-kondo、自己完結）。
+期待相対パスに checkout して west レイアウトを再構成し、`kbb -M:dev:test` を
+回す（token 不要）。lint job は `kbb -M:lint`（clj-kondo、自己完結）。
 
 **現状の制約**: gftdcojp org は GitHub Actions を**組織方針で無効化**している
 （repo 単位で有効化できない＝409）。そのため `.github/workflows/ci.yml` は正しく
 登録されるが**実行されない**。org 方針の変更は本 actor のスコープ外（組織のセキュ
 リティ/コスト判断）。それまでのゲートはローカル / west superproject での
-`clojure -M:lint` と `-M:dev:test`。superproject（com-junkawasaki）側は Actions が
+`kbb -M:lint` と `-M:dev:test`。superproject（com-junkawasaki）側は Actions が
 有効なので、結合 CI はそちらに寄せるのが本筋。
 
 ## 帰結

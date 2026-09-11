@@ -14,8 +14,8 @@ The shortest path from forking this repo to running a governed talent-management
 
 ```bash
 git clone https://github.com/<you>/cloud-itonami-isic-6310 && cd cloud-itonami-isic-6310
-clojure -M:dev:test    # 27 tests — policy contract, store parity, phases
-clojure -M:dev:run     # the four kaonavi-equivalent ops end-to-end
+kbb -M:dev:test    # 27 tests — policy contract, store parity, phases
+kbb -M:dev:run     # the four kaonavi-equivalent ops end-to-end
 ```
 
 (`deps.edn` resolves `kotoba-lang/langgraph`/`langchain` as sibling
@@ -50,7 +50,7 @@ and re-run the policy contract tests:
   evaluation or leak into a report
 - `confidence-floor` / `high-stakes` — what always goes to a human
 
-Every change must keep `clojure -M:dev:test` green — the tests ARE the
+Every change must keep `kbb -M:dev:test` green — the tests ARE the
 policy contract your operators and works council can read.
 
 ## 5. Wire the approval workflow and phase rollout
