@@ -1,6 +1,6 @@
 ;; Generates docs/index.html (the GitHub Pages demo UI) from EDN/Hiccup via
 ;; kotoba-lang/html + kotoba-lang/jp-go-digital-design-system -- markup/styling
-;; as data, not hand-quoted HTML strings -- following kototama/web/generate.cljs's
+;; as data, not hand-quoted HTML strings -- following kototama/web/generate.cljk's
 ;; and cloud-itonami-isic-6399/web's own precedent (nbb authoring, zero build
 ;; step for a visiting browser; in-browser interactivity is `search.cljs`
 ;; run by scittle, i.e. ClojureScript in the browser, not a hand-written
@@ -295,7 +295,7 @@
     [:p {:class "tb-lead"}
      "kaonavi 型 SaaS との違いはここです: HR-LLM(advisor) は提案しか返せず、コミット権は"
      "独立した "
-     [:a {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/src/talent/policy.cljc"}
+     [:a {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/src/talent/policy.cljk"}
       "PolicyGovernor"]
      " が握ります(HARD violation は人間の承認でも覆せません)。下表はこのページの生成時に"
      "実際の OperationActor(StateGraph)を4回実行した結果です — HR-LLM 提案 → PolicyGovernor → "
@@ -345,7 +345,7 @@
      [:a {:href "https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/operator-guide.md"} "operator guide"]
      " · 姉妹デモ: "
      [:a {:href "https://cloud-itonami.github.io/cloud-itonami-isic-6399/"} "Meta Job Search (isic-6399)"]
-     "。このページは " [:code "web/generate.cljs"] " (nbb) が実 Store/PolicyGovernor を実行して生成し、検索は "
+     "。このページは " [:code "web/generate.cljk"] " (nbb) が実 Store/PolicyGovernor を実行して生成し、検索は "
      [:code "search.cljs"] " (scittle = ブラウザ内 ClojureScript) が実行しています。"]]))
 
 ;; employee board data for the in-browser search (search.cljs).
@@ -371,10 +371,10 @@
        body
        scripts)
       "\n"))
-(fs/copyFileSync "search.cljs" "../docs/search.cljs")
+(fs/copyFileSync "search.cljs" "../docs/search.cljk")
 ;; ブラウザ側 .cljs はコピーするだけ(ビルド無し)。
 (def html-root
   (or (some-> js/process.env.KOTOBA_HTML_ROOT not-empty) "../../../kotoba-lang/html"))
-(fs/copyFileSync (str html-root "/src/html/core.cljc") "../docs/html_core.cljs")
+(fs/copyFileSync (str html-root "/src/html/core.cljc") "../docs/html_core.cljk")
 (println (str "wrote docs/index.html (" (count employees) " employees; "
               (pr-str (mapv :disposition results)) ")"))

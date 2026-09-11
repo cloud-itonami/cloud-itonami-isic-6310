@@ -2737,7 +2737,7 @@ code { font-family: var(--font-family-mono); background: var(--color-neutral-sol
     </section>
     <section class="dds-ext-section">
       <h2 class="dads-heading" data-size="32">PolicyGovernor — HR-LLM の operation がどう検閲されるか</h2>
-      <p class="tb-lead">kaonavi 型 SaaS との違いはここです: HR-LLM(advisor) は提案しか返せず、コミット権は独立した <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/src/talent/policy.cljc">PolicyGovernor</a> が握ります(HARD violation は人間の承認でも覆せません)。下表はこのページの生成時に実際の OperationActor(StateGraph)を4回実行した結果です — HR-LLM 提案 → PolicyGovernor → phase gate → (必要なら)承認 interrupt → commit/hold。</p>
+      <p class="tb-lead">kaonavi 型 SaaS との違いはここです: HR-LLM(advisor) は提案しか返せず、コミット権は独立した <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/src/talent/policy.cljk">PolicyGovernor</a> が握ります(HARD violation は人間の承認でも覆せません)。下表はこのページの生成時に実際の OperationActor(StateGraph)を4回実行した結果です — HR-LLM 提案 → PolicyGovernor → phase gate → (必要なら)承認 interrupt → commit/hold。</p>
       <div class="dads-table">
         <table class="dads-table__table"><thead>
           <tr>
@@ -2852,7 +2852,7 @@ e-100,田中 部長,:G5,営業</pre>
       <p class="cta">
         <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/issues/new?template=operator-interest.yml">🡒 自社・自団体でこの人材基盤を運営したい方はこちら(operator-interest)</a>
       </p>
-      <p>OSS (AGPL-3.0-or-later)。fork して自社の人材基盤として運営できます — <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/business-model.md">business model</a> · <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/operator-guide.md">operator guide</a> · 姉妹デモ: <a href="https://cloud-itonami.github.io/cloud-itonami-isic-6399/">Meta Job Search (isic-6399)</a>。このページは <code>web/generate.cljs</code> (nbb) が実 Store/PolicyGovernor を実行して生成し、検索は <code>search.cljs</code> (scittle = ブラウザ内 ClojureScript) が実行しています。</p>
+      <p>OSS (AGPL-3.0-or-later)。fork して自社の人材基盤として運営できます — <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/business-model.md">business model</a> · <a href="https://github.com/cloud-itonami/cloud-itonami-isic-6310/blob/main/docs/operator-guide.md">operator guide</a> · 姉妹デモ: <a href="https://cloud-itonami.github.io/cloud-itonami-isic-6399/">Meta Job Search (isic-6399)</a>。このページは <code>web/generate.cljk</code> (nbb) が実 Store/PolicyGovernor を実行して生成し、検索は <code>search.cljs</code> (scittle = ブラウザ内 ClojureScript) が実行しています。</p>
     </footer>
   </div><script type="application/json" id="board-data">[{"id":"e-001","name":"佐藤 花子","grade":"G3","dept":"営業","manager":"田中 部長","goals":["新規受注 12 件 — 14/12 ✓","提案資料テンプレ整備 — 1/1 ✓"],"engagement":"engagement 4.2 / eNPS 30"},{"id":"e-002","name":"鈴木 太郎","grade":"G2","dept":"カスタマーサクセス","manager":"田中 部長","goals":["新規受注 8 件 — 5/8"],"engagement":"engagement 2.1 / eNPS -40"},{"id":"e-100","name":"田中 部長","grade":"G5","dept":"営業","manager":"—","goals":[],"engagement":"サーベイ未回答"}]</script><script src="https://cdn.jsdelivr.net/npm/scittle@0.6.22/dist/scittle.js"></script><script type="application/x-scittle" src="html_core.cljs"></script><script type="application/x-scittle" src="search.cljs"></script></body>
 </html>

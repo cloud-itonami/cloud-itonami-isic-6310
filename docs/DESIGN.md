@@ -35,9 +35,9 @@ TalentSystem (root supervisor)
 ├── InsightActor ……… サーベイ・分析（:survey/analyze・AttritionRisk）
 │
 ├── OperationActor[op] … ★ 1操作 = 1 actor run; HR-LLM 封じ込め ★
-│     ├── HR-LLM (sealed)     proposal only（src/talent/hrllm.cljc）
-│     ├── PolicyGovernor      INDEPENDENT 規程ゲート（src/talent/policy.cljc）
-│     ├── Committer           SSoT/台帳への書き込み（src/talent/store.cljc）
+│     ├── HR-LLM (sealed)     proposal only（src/talent/hrllm.cljk）
+│     ├── PolicyGovernor      INDEPENDENT 規程ゲート（src/talent/policy.cljk）
+│     ├── Committer           SSoT/台帳への書き込み（src/talent/store.cljk）
 │     └── Recorder            監査台帳（append-only）
 │
 ├── ApprovalActor ……… 上長/HRBP 承認（interrupt を受ける human-in-the-loop）
@@ -55,7 +55,7 @@ TalentSystem (root supervisor)
 
 ## 3. OperationActor 内部（HR-LLM ラッパー）
 
-`src/talent/operation.cljc` の langgraph-clj StateGraph として実装。
+`src/talent/operation.cljk` の langgraph-clj StateGraph として実装。
 **1 run = 1 HR操作** — 有界で監査可能、無限内部ループを持たない。
 
 ```
@@ -91,7 +91,7 @@ OperationActor は次の3点を注入で受け、コアは不変のまま本番�
 
 ## 4. PolicyGovernor（独立検閲層）
 
-`src/talent/policy.cljc`。LLM とは別経路で、提案を可決/拒否/escalate に判定する。
+`src/talent/policy.cljk`。LLM とは別経路で、提案を可決/拒否/escalate に判定する。
 
 ```clojure
 (policy/check context proposal db)
@@ -114,7 +114,7 @@ high-stakes）だけが ApprovalActor で人間が可否を決める。
 
 ## 5. SSoT と監査台帳
 
-`src/talent/store.cljc`。dev は in-mem の EDN 事実層（本番は Datomic）。
+`src/talent/store.cljk`。dev は in-mem の EDN 事実層（本番は Datomic）。
 
 - **entities**: `employees` `org`（manager 関係）`goals`（MBO/OKR）`surveys`。
 - **commit-record!**: 操作結果を SSoT に反映。
@@ -126,13 +126,13 @@ high-stakes）だけが ApprovalActor で人間が可否を決める。
 
 ## 6. 帳票/CSV（governed read）
 
-`src/talent/report.cljc`。読み取りも OperationActor の `:report/export` を通し、
+`src/talent/report.cljk`。読み取りも OperationActor の `:report/export` を通し、
 PolicyGovernor の**最小開示**ゲートで許可列のみを出力する。CSV/帳票は SaaS の
 出力機能の代替で、列ポリシーをコードで固定できる点が上回る。
 
 ## 7. デモ（`clojure -M:dev:run`）
 
-`src/talent/sim.cljc` が 4 ドメインを actor に通す:
+`src/talent/sim.cljk` が 4 ドメインを actor に通す:
 
 ```
 op1  従業員DB upsert（HRBP・正当）            → commit
@@ -146,7 +146,7 @@ op4  サーベイ分析が離職予兆 high（重大）        → 人間承認�
 
 ## 8. テスト（`clojure -M:dev:test`）
 
-`test/talent/policy_contract_test.cljc` が**規程契約を実行可能**にする:
+`test/talent/policy_contract_test.cljk` が**規程契約を実行可能**にする:
 
 - 正当な upsert は commit され台帳に残る。
 - 無権限 role の操作は書き込まれない（RBAC hard violation → hold）。
