@@ -2,7 +2,7 @@
 ;; kotoba-lang/html + kotoba-lang/jp-go-digital-design-system -- markup/styling
 ;; as data, not hand-quoted HTML strings -- following kototama/web/generate.cljk's
 ;; and cloud-itonami-isic-6399/web's own precedent (nbb authoring, zero build
-;; step for a visiting browser; in-browser interactivity is `search.cljs`
+;; step for a visiting browser; in-browser interactivity is `search.cljk`
 ;; run by scittle, i.e. ClojureScript in the browser, not a hand-written
 ;; .js file).
 ;;
@@ -153,7 +153,7 @@
                   :align-items "flex-end" :margin-bottom "1.5rem"}]
    [".tb-search .dads-form-control-label" {:flex 1 :min-width "14rem"}]
    [".dads-input-text__input" {:width "100%"}]
-   ;; 社員カードは search.cljs が実行時に注入する(dds-ext-card + tb-card)
+   ;; 社員カードは search.cljk が実行時に注入する(dds-ext-card + tb-card)
    ["#board" {:display "grid"
               :grid-template-columns "repeat(auto-fill,minmax(16rem,1fr))"
               :gap "1rem" :margin-top "1rem"}]
@@ -346,18 +346,18 @@
      " · 姉妹デモ: "
      [:a {:href "https://cloud-itonami.github.io/cloud-itonami-isic-6399/"} "Meta Job Search (isic-6399)"]
      "。このページは " [:code "web/generate.cljk"] " (nbb) が実 Store/PolicyGovernor を実行して生成し、検索は "
-     [:code "search.cljs"] " (scittle = ブラウザ内 ClojureScript) が実行しています。"]]))
+     [:code "search.cljk"] " (scittle = ブラウザ内 ClojureScript) が実行しています。"]]))
 
-;; employee board data for the in-browser search (search.cljs).
+;; employee board data for the in-browser search (search.cljk).
 ;; script は html.core の raw-text tag なので子は素の文字列で渡す。
 (def scripts
   [[:script {:type "application/json" :id "board-data"}
     (js/JSON.stringify (clj->js (mapv employee->json-entry employees)))]
    [:script {:src "https://cdn.jsdelivr.net/npm/scittle@0.6.22/dist/scittle.js"}]
-   ;; search.cljs は hiccup を html.core で文字列化する(生 HTML を書かない)ので、
+   ;; search.cljk は hiccup を html.core で文字列化する(生 HTML を書かない)ので、
    ;; そのライブラリもブラウザへ同梱する。読み込み順は依存順。
    [:script {:type "application/x-scittle" :src "html_core.cljs"}]
-   [:script {:type "application/x-scittle" :src "search.cljs"}]])
+   [:script {:type "application/x-scittle" :src "search.cljk"}]])
 
 (fs/mkdirSync "../docs" #js {:recursive true})
 (fs/writeFileSync
@@ -371,7 +371,7 @@
        body
        scripts)
       "\n"))
-(fs/copyFileSync "search.cljs" "../docs/search.cljk")
+(fs/copyFileSync "search.cljk" "../docs/search.cljk")
 ;; ブラウザ側 .cljs はコピーするだけ(ビルド無し)。
 (def html-root
   (or (some-> js/process.env.KOTOBA_HTML_ROOT not-empty) "../../../kotoba-lang/html"))
