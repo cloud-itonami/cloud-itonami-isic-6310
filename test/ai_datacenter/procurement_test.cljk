@@ -1,5 +1,5 @@
 (ns ai-datacenter.procurement-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [ai-datacenter.procurement :as procurement]))
 
 (deftest rfq-is-a-draft-and-send-is-gated

@@ -7,3 +7,4 @@
 .*-actor/identity.*
 identity.edn
 identity.json
+.nbb/

@@ -1,5 +1,5 @@
 (ns ai-datacenter.international-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [ai-datacenter.international :as intl]))
 
 (deftest eu-is-not-treated-as-a-country

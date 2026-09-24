@@ -1,7 +1,7 @@
 (ns talent.facts-test
   "Tests for the m365-archive facts seed adapter, including the graceful
   fallback when the DataLad/git-annex dataset isn't materialized."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [talent.facts :as facts]
             [talent.store :as store]))
 
