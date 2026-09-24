@@ -1,5 +1,5 @@
 (ns ai-datacenter.platform-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [ai-datacenter.actor :as actor]
             [ai-datacenter.commerce :as commerce]
             [ai-datacenter.compute :as compute]

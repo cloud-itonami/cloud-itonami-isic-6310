@@ -3,7 +3,7 @@
   langchain's mock-model. Proves: a real LLM proposal is parsed, still fully
   censored by the PolicyGovernor, and that an unparseable/garbage response can
   never auto-commit."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [langchain.model :as model]
             [talent.hrllm :as hrllm]
             [talent.policy :as policy]

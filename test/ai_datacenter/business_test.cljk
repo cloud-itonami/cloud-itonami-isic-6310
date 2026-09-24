@@ -1,5 +1,5 @@
 (ns ai-datacenter.business-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [ai-datacenter.business :as business]))
 
 (deftest evidence-and-approval-gates

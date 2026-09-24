@@ -8,7 +8,7 @@
   :main-arity); the two real i32 inputs are written into the guest's
   exported linear memory at fixed offsets before calling main() -- see
   wasm/achievement_band.kotoba's header comment for the offset layout."
-  (:require             [clojure.test :refer [deftest is testing]]
+  (:require             [kotoba.test :refer [deftest is testing]]
             [kototama.contract :as contract]
             [kototama.tender :as tender]))
 
