@@ -19,7 +19,7 @@
      :effect     kw             ; how a commit would mutate the SSoT
      :stake      kw|nil         ; :grade-change/:termination/... if high-stakes
      :confidence 0..1}"
-  (:require #?(:clj  [clojure.edn :as edn]
+  (:require #?(:clj  [kotoba.lang.edn :as edn]
                :cljs [cljs.reader :as edn])
             [kotoba.lang.text :as str]
             [langchain.model :as model]
