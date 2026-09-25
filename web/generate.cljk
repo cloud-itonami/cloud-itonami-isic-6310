@@ -356,7 +356,7 @@
    [:script {:src "https://cdn.jsdelivr.net/npm/scittle@0.6.22/dist/scittle.js"}]
    ;; search.cljk は hiccup を html.core で文字列化する(生 HTML を書かない)ので、
    ;; そのライブラリもブラウザへ同梱する。読み込み順は依存順。
-   [:script {:type "application/x-scittle" :src "html_core.cljs"}]
+   [:script {:type "application/x-scittle" :src "html_core.cljk"}]
    [:script {:type "application/x-scittle" :src "search.cljk"}]])
 
 (fs/mkdirSync "../docs" #js {:recursive true})
@@ -375,6 +375,6 @@
 ;; ブラウザ側 .cljs はコピーするだけ(ビルド無し)。
 (def html-root
   (or (some-> js/process.env.KOTOBA_HTML_ROOT not-empty) "../../../kotoba-lang/html"))
-(fs/copyFileSync (str html-root "/src/html/core.cljc") "../docs/html_core.cljk")
+(fs/copyFileSync (str html-root "/src/html/core.cljk") "../docs/html_core.cljk")
 (println (str "wrote docs/index.html (" (count employees) " employees; "
               (pr-str (mapv :disposition results)) ")"))
